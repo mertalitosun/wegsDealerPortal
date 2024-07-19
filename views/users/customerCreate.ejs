@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+    <%- include('../partials/nav') %>
+    <div class="container mt-5 ">
+        <form method="post">
+            <div class="mb-3">
+                <label for="firstName" class="form-label">Ad</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Ad" class="form-control" required>
+            </div>
+    
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Soyad</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Soyad" class="form-control" required>
+            </div>
+    
+            <div class="mb-3">
+                <label for="organization" class="form-label">Şirket</label>
+                <input type="text" id="organization" name="organization" placeholder="Şirket" class="form-control" required>
+            </div>
+    
+            <div class="mb-3">
+                <label for="phone" class="form-label">Telefon</label>
+                <input type="text" id="phone" name="phone" placeholder="Telefon" class="form-control" required>
+            </div>
+    
+            <div class="mb-3">
+                <label for="email" class="form-label">E-Posta</label>
+                <input type="email" id="email" name="email" placeholder="E-Posta" class="form-control" required>
+            </div>
+    
+            <% packages.forEach(package => { %>
+                <div class="mb-3">
+                    <label for="<%= package.id %>" class="form-label"><%= package.packageName %></label>
+                    <input type="radio" name="package" id="<%= package.id %>" value="<%= package.id %>">
+                </div>
+            <% }) %>
+            <button type="submit" class="btn btn-primary w-100">Kaydet</button>
+        </form>
+    </div>
+ 
+</body>
+</html>

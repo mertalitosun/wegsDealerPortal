@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+    <%- include('../partials/nav') %>
+    <div class="container mt-5 d-flex align-items-center flex-column">
+        <div class="col-lg-8 table-responsive">
+            <h6 class="text-center">Bayi Bilgileri</h6>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ad</th>
+                        <th>Soyad</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Müşteri Sayısı</th>
+                        <th>Referans Kodu</th>
+                        <% if (users.referenceBy) { %>
+                         <th>Referans Olan Bayi</th>
+                         <th>Referans Olan Bayi Kodu</th>
+                        <% } %>
+                    </tr>
+                </thead>
+                <tbody>
+                        <tr>
+                            <td>
+                                <%= users.id %>
+                            </td>
+                            <td>
+                                <%= users.firstName %>
+                            </td>
+                            <td>
+                                <%= users.lastName %>
+                            </td>
+                            <td>
+                                <%= users.email %>
+                            </td>
+                            <td>
+                                <% users.roles.forEach(role => { %>
+                                    <%= role.roleName %><br>
+                                <% }) %>
+                            </td>
+                            <td>
+                                <%= customerCount %>
+                            </td>
+                            <td>
+                                <%= users.referenceCode %>
+                            </td>
+                            <% if (users.referenceBy) { %>
+                                <td><a href="/admin/user/details/<%= users.reference.id %>"><%= users.reference.firstName %></a></td>
+                                <td><a href="/admin/user/details/<%= users.reference.id %>"><%= users.referenceBy %></a></td>
+                            <% } %>
+                        </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-8 table-responsive">
+            <h6 class="text-center">Müşteriler</h6>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ad</th>
+                        <th>Soyad</th>
+                        <th>Şirket</th>
+                        <th>Email</th>
+                        <th>Telefon</th>
+                        <th>Kayıt Yapan Bayi</th>
+                        <th>Kayıt Yapan Bayi Kodu</th>
+                        <th>Satın Alınan Paket</th>
+                        <th>Paket Fiyatları</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% customers.forEach(customer => { %>
+                        <tr>
+                            <td>
+                                <%= customer.id %>
+                            </td>
+                            <td>
+                                <%= customer.firstName %>
+                            </td>
+                            <td>
+                                <%= customer.lastName %>
+                            </td>
+                            <td>
+                                <%= customer.organization %>
+                            </td>
+                            <td>
+                                <%= customer.email %>
+                            </td>
+                            <td>
+                                <%= customer.phone %>
+                            </td>
+                            <td>
+                                <%= customer.user.firstName %>
+                            </td>
+                            <td>
+                                <%= customer.user.referenceCode %>
+                            </td>
+                            <td>
+                                <%= customer.package.packageName %>
+                            </td>
+                            <td>
+                                <%= customer.package.packagePrice %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+       
+    </div>
+    <%- include('../partials/script') %>
+</body>
+</html>

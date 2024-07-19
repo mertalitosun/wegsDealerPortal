@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../../partials/head') %>
+<body>
+    <%- include('../../partials/nav') %>
+    <div class="container mt-5">
+        <form method="post">
+            <div class="mb-3">
+              <label for="roleName" class="form-label">Rol Adı</label>
+              <input type="text" class="form-control" id="roleName" name="roleName" value="<%= role.roleName %>">
+            </div>
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+        </form>
+    </div>
+    <%- include('../../partials/script') %>
+</body>
+</html>

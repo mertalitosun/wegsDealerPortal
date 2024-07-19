@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../../partials/head') %>
+<body>
+    <%- include('../../partials/nav') %>
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="col-lg-8 table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Paket Adı</th>
+                        <th>Paket Fiyatı</th>
+                        <th><a href="/admin/package/create">Paket Ekle</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% packages.forEach(package => { %>
+                        <tr>
+                            <td>
+                                <%= package.packageName %>
+                            </td>
+                            <td>
+                                <%= package.packagePrice %>
+                            </td>
+                            <td>
+                                <a href="/admin/package/delete/<%= package.id %>"><i class="bi bi-trash"></i></a>
+                                <a href="/admin/package/edit/<%= package.id %>"><i class="bi bi-pencil-square"></i></a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+       
+    </div>
+    <%- include('../../partials/script') %>
+</body>
+</html>

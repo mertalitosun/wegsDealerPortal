@@ -1,0 +1,49 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Bayi Portal</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <% if (isAuth) { %>
+          <% if (isDealer) { %>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/profile">Anasayfa</a>
+            </li>
+            <% if (isAdmin) { %>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/dealers">Bayiler</a>
+              </li>
+            <% } %>
+            <li class="nav-item">
+              <a class="nav-link" href="/user/customers">Müşteriler</a>
+            </li>
+          <% } %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <%= fullName %>
+            </a>
+            <ul class="dropdown-menu">
+              <% if (isAdmin) { %>
+              <li><a class="dropdown-item" href="/admin/roles">Roller</a></li>
+              <li><a class="dropdown-item" href="/admin/packages">Paketler</a></li>
+              <% } %>
+              <li><a class="dropdown-item" href="/logout">Çıkış Yap</a></li>
+
+            </ul>
+          </li>
+        <% } %>
+        
+        <% if (!isAuth) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/login">Giriş Yap</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/register">Kaydol</a>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</nav>

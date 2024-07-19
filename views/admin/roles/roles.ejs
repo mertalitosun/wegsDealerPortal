@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../../partials/head') %>
+<body>
+    <%- include('../../partials/nav') %>
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="col-lg-8 table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Rol Adı</th>
+                        <th><a href="/admin/role/create">Rol Ekle</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% roles.forEach(role => { %>
+                        <tr>
+                            <td>
+                            <%= role.roleName %>
+                            </td>
+                            <td>
+                                <a href="/admin/role/delete/<%= role.id %>"><i class="bi bi-trash"></i></a>
+                                <a href="/admin/role/edit/<%= role.id %>"><i class="bi bi-pencil-square"></i></a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+       
+    </div>
+    <%- include('../../partials/script') %>
+</body>
+</html>

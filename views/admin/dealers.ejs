@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+    <%- include('../partials/nav') %>
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="col-lg-8 table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ad</th>
+                        <th>Soyad</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Detay</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(user => { %>
+                        <tr>
+                            <td>
+                                <%= user.id %>
+                            </td>
+                            <td>
+                                <%= user.firstName %>
+                            </td>
+                            <td>
+                                <%= user.lastName %>
+                            </td>
+                            <td>
+                                <%= user.email %>
+                            </td>
+                            <td>
+                                <% user.roles.forEach(role => { %>
+                                    <%= role.roleName %><br>
+                                <% }) %>
+                            </td>
+                            <td>
+                                <a href="/admin/user/details/<%= user.id %>">İncele</a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+       
+    </div>
+    <%- include('../partials/script') %>
+</body>
+</html>

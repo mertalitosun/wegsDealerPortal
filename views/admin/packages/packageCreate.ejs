@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../../partials/head') %>
+<body>
+    <%- include('../../partials/nav') %>
+    <div class="container mt-5">
+        <form method="post">
+            <div class="mb-3">
+              <label for="packageName" class="form-label">Paket Adı</label>
+              <input type="text" class="form-control" id="packageName" name="packageName">
+            </div>
+            <div class="mb-3">
+                <label for="packagePrice" class="form-label">Paket Fiyatı</label>
+                <input type="number" class="form-control" id="packagePrice" name="packagePrice">
+              </div>
+            <button type="submit" class="btn btn-success">Ekle</button>
+        </form>
+    </div>
+    <%- include('../../partials/script') %>
+</body>
+</html>
