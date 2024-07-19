@@ -3,12 +3,11 @@
 <%- include('../partials/head') %>
 <body>
     <%- include('../partials/nav') %>
-    <div class="container-fluid mt-5 d-flex justify-content-center">
+    <div class="container-fluid mt-5 d-flex  align-items-center flex-column">
         <div class="col-lg-8 table-responsive">
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Ad</th>
                         <th>Soyad</th>
                         <th>Şirket</th>
@@ -20,11 +19,13 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <% let totalProgressPrice = 0%>
+                    <%  customers.forEach(customer => { %>
+                        <%  totalProgressPrice += customer.package.packagePrice * commissionRate;%>
+                    <% }) %>
+            
                     <% customers.forEach(customer => { %>
                         <tr>
-                            <td>
-                                <%= customer.id %>
-                            </td>
                             <td>
                                 <%= customer.firstName %>
                             </td>
@@ -46,12 +47,17 @@
                             <td>
                                 <%= customer.package.packagePrice %>
                             </td>
+                            <td>
+                                ₺<%= customer.package.packagePrice * commissionRate%>
+                            </td>
                         </tr>
                     <% }) %>
                 </tbody>
             </table>
         </div>
-       
+        <div class="p-3 bg-light d-flex align-items-center">
+            <span>Toplam Hakediş: <%= totalProgressPrice %></span>
+        </div>
     </div>
     <%- include('../partials/script') %>
 </body>

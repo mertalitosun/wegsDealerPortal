@@ -101,6 +101,7 @@ exports.get_user_details = async (req, res) => {
       }
     ]});
     const customerCount = customers.length
+    const commissionRate = 0.10;
     const users = await Users.findByPk(userId, {include:[{model:Roles},
       {model:Users,
         as:"reference",
@@ -111,7 +112,8 @@ exports.get_user_details = async (req, res) => {
       title: "Bayi Detay",
       customers:customers,
       users:users,
-      customerCount:customerCount
+      customerCount:customerCount,
+      commissionRate:commissionRate
     });
   }catch(err){
     console.log(err)

@@ -36,11 +36,14 @@ exports.get_customer_create = async (req, res) => {
 
 exports.get_customers = async (req, res) => {
   const userId = req.session.userId
+  const commissionRate = 0.10;
+
   try {
     const customers = await Customers.findAll({where:{addedBy:userId},include:[{model:Packages,attributes:["packageName","packagePrice"]}]});
     res.render("users/customers", {
       title: "Müşteriler",
       customers: customers,
+      commissionRate:commissionRate
     });
   } catch (err) {
     console.log(err);

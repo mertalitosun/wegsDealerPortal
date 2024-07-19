@@ -3,7 +3,7 @@
 <%- include('../partials/head') %>
 <body>
     <%- include('../partials/nav') %>
-    <div class="container mt-5 d-flex align-items-center flex-column">
+    <div class="container-fluid mt-5 d-flex align-items-center flex-column">
         <div class="col-lg-8 table-responsive">
             <h6 class="text-center">Bayi Bilgileri</h6>
             <table class="table table-bordered table-striped">
@@ -55,12 +55,11 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-lg-8 table-responsive">
+        <div class="table-responsive">
             <h6 class="text-center">Müşteriler</h6>
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Ad</th>
                         <th>Soyad</th>
                         <th>Şirket</th>
@@ -70,14 +69,17 @@
                         <th>Kayıt Yapan Bayi Kodu</th>
                         <th>Satın Alınan Paket</th>
                         <th>Paket Fiyatları</th>
+                        <th>Hakediş (%10)</th>
                     </tr>
                 </thead>
                 <tbody>
+                    <% let totalProgressPrice = 0%>
+                    <%  customers.forEach(customer => { %>
+                        <%  totalProgressPrice += customer.package.packagePrice * commissionRate;%>
+                    <% }) %>
+            
                     <% customers.forEach(customer => { %>
                         <tr>
-                            <td>
-                                <%= customer.id %>
-                            </td>
                             <td>
                                 <%= customer.firstName %>
                             </td>
@@ -103,14 +105,19 @@
                                 <%= customer.package.packageName %>
                             </td>
                             <td>
-                                <%= customer.package.packagePrice %>
+                                ₺<%= customer.package.packagePrice %>
+                            </td>
+                            <td>
+                                ₺<%= customer.package.packagePrice * commissionRate%>
                             </td>
                         </tr>
                     <% }) %>
                 </tbody>
             </table>
         </div>
-       
+        <div class="p-3 bg-light d-flex align-items-center">
+            <span>Toplam Hakediş: <%= totalProgressPrice %></span>
+        </div>
     </div>
     <%- include('../partials/script') %>
 </body>
