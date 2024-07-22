@@ -4,7 +4,7 @@
 <body>
     <%- include('../partials/nav') %>
     <div class="container-fluid mt-5 d-flex  align-items-center flex-column">
-        <div class="col-lg-8 table-responsive">
+        <div class="table-responsive">
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
@@ -21,9 +21,9 @@
                 <tbody>
                     <% let totalProgressPrice = 0%>
                     <%  customers.forEach(customer => { %>
-                        <%  totalProgressPrice += customer.package.packagePrice * commissionRate;%>
+                        <%  totalProgressPrice += customer.package.packagePrice * commissionRate%>
                     <% }) %>
-            
+                
                     <% customers.forEach(customer => { %>
                         <tr>
                             <td>
@@ -54,10 +54,102 @@
                     <% }) %>
                 </tbody>
             </table>
+            <div class="p-3 bg-light d-flex justify-content-center my-3">
+                <span><b>Toplam Hakediş: <%= totalProgressPrice %></b></span>
+            </div>
+            
+            <% if (subDealers.length >0) { %>
+                <table class="table table-bordered table-striped">
+                    <h6 class="text-center">Alt Bayiler</h6>
+                    <thead>
+                        <tr>
+                            <th>Ad</th>
+                            <th>Soyad</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% subDealers.forEach(subDealer => { %>
+                            <tr>
+                                <td>
+                                    <%= subDealer.firstName %>
+                                </td>
+                                <td>
+                                    <%= subDealer.lastName %>
+                                </td>
+                                <td>
+                                    <%= subDealer.email %>
+                                </td>
+                                <td>
+                                    <% subDealer.roles.forEach(role => { %>
+                                        <%= role.roleName %><br>
+                                    <% }) %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } %>
+           
+            <% if (subCustomers.length > 0 ) { %>
+                <h6 class="text-center">Alt Bayi Müşterileri</h6>
+                <table class="table table-bordered table-striped table-info ">
+                    <thead>
+                        <tr>
+                            <th>Ad</th>
+                            <th>Soyad</th>
+                            <th>Şirket</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>Kayıt Yapan Bayi</th>
+                            <th>Kayıt Tarihi</th>
+                            <th>Satın Alınan Paket</th>
+                            <th>Paket Fiyatları</th>
+                            <th>Hakediş</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <% subCustomers.forEach(subCustomer => { %>
+                            <tr >
+                                <td>
+                                    <%= subCustomer.firstName %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.lastName %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.organization %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.email %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.phone %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.user.firstName %>
+                                </td>
+                                <td>
+                                    <% const createdAt = new Date(subCustomer.createdAt); %>
+                                    <%= createdAt.getDate().toString().padStart(2, '0') %>/<%= (createdAt.getMonth() + 1).toString().padStart(2, '0') %>/<%= createdAt.getFullYear() %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.package.packageName %>
+                                </td>
+                                <td>
+                                    ₺<%= subCustomer.package.packagePrice %>
+                                </td>
+                                <td>
+                                    ₺<%=  subCustomer.package.packagePrice * subDealerCommissionRate%>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                <% } %>
         </div>
-        <div class="p-3 bg-light d-flex align-items-center">
-            <span>Toplam Hakediş: <%= totalProgressPrice %></span>
-        </div>
+       
     </div>
     <%- include('../partials/script') %>
 </body>

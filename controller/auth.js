@@ -32,16 +32,22 @@ exports.post_register = async (req, res) => {
         const uniqueCode = shortid.generate();
         const reference_code = uniqueCode
 
-        let userRoleName = 'Bayi';
         const users = await Users.findAll();
-        if (!users.length) {
-            userRoleName = 'Admin';
+        
+        let roles = ['Bayi']; 
+        if (users.length === 0) {
+            roles = ['Admin']; 
         } else if (reference_by) {
-            userRoleName = 'Alt Bayi';
+            roles.push('Alt Bayi');
         }
-        let userRole = await Roles.findOne({ where: { roleName: userRoleName } });
-        if (!userRole) {
-            userRole = await Roles.create({ roleName: userRoleName });
+        
+        let userRoles = [];
+        for (const roleName of roles) {
+            let userRole = await Roles.findOne({ where: { roleName: roleName } });
+            if (!userRole) {
+                userRole = await Roles.create({ roleName: roleName });
+            }
+            userRoles.push(userRole);
         }
         const user = await Users.create({
             firstName: firstName,
@@ -52,8 +58,8 @@ exports.post_register = async (req, res) => {
             referenceCode:reference_code
         });
 
-        if(userRole){
-            await user.addRole(userRole);
+        for (const role of userRoles) {
+            await user.addRole(role);
         }
         return res.redirect("/login");
     } catch (err) {

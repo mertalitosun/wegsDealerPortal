@@ -6,26 +6,30 @@ const bcrypt = require("bcrypt");
 const shortid = require("shortid");
 
 const dummyData = async () => {
-    const roleCount = await Roles.count();
-    if (roleCount === 0) {
-        const roles = await Roles.bulkCreate([
-            { roleName: "Admin" },
-            { roleName: "Bayi" },
-            { roleName: "Alt Bayi" },
-        ]);
-        const usersCount = await Users.count();
-        if (usersCount === 0) {
-            const referenceCode = shortid.generate()
-            const users = await Users.bulkCreate([
-                { firstName: "mertali", lastName: "tosun", email: "mertali@mail.com", password: await bcrypt.hash("123456", 10), referenceCode: shortid.generate() },
-                { firstName: "mehmet", lastName: "namal", email: "mehmet@mail.com", password: await bcrypt.hash("123456", 10), referenceCode: referenceCode },
-                { firstName: "ahmet", lastName: "namal", email: "ahmet@mail.com", password: await bcrypt.hash("123456", 10), referenceCode: shortid.generate(), referenceBy:referenceCode }
+   
+        const roleCount = await Roles.count();
+        if (roleCount === 0) {
+            const roles = await Roles.bulkCreate([
+                { roleName: "Admin"},
+                { roleName: "Bayi"},
+                { roleName: "Alt Bayi"},
             ]);
-            await users[0].addRoles([roles[0]]);
-            await users[1].addRoles([roles[1]]);
-            await users[2].addRoles([roles[2]]);
+            const usersCount = await Users.count();
+            if (usersCount === 0) {
+                const referenceCode = shortid.generate()
+                const users = await Users.bulkCreate([
+                    { firstName: "mertali", lastName: "tosun", email: "mertali@mail.com", password: await bcrypt.hash("123456", 10), referenceCode: shortid.generate() },
+                    { firstName: "mehmet", lastName: "namal", email: "mehmet@mail.com", password: await bcrypt.hash("123456", 10), referenceCode: referenceCode,},
+                    { firstName: "ahmet", lastName: "namal", email: "ahmet@mail.com", password: await bcrypt.hash("123456", 10), referenceCode: shortid.generate(), referenceBy:referenceCode,}
+                ]);
+                await users[0].addRoles([roles[0]]);
+
+                await users[1].addRoles([roles[1]]);
+
+                await users[2].addRoles([roles[1]]);
+                await users[2].addRoles([roles[2]]);
+            }
         }
-    }
     const packageCount = await Packages.count();
     if (packageCount == 0) {
         await Packages.bulkCreate([

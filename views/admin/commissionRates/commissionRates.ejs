@@ -8,19 +8,21 @@
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>Rol Adı</th>
-                        <th><a href="/admin/role/create">Rol Ekle</a></th>
+                        <th>Komisyon Adı</th>
+                        <th>Komisyon Oranı</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% roles.forEach(role => { %>
+                    <% commissionRates.forEach(commissionRate => { %>
                         <tr>
                             <td>
-                            <%= role.roleName %>
+                            <%= commissionRate.name %>
                             </td>
                             <td>
-                                <a href="/admin/role/delete/<%= role.id %>"><i class="bi bi-trash"></i></a>
-                                <a href="/admin/role/edit/<%= role.id %>"><i class="bi bi-pencil-square"></i></a>
+                                <%= commissionRate.rate %>
+                                </td>
+                            <td>
+                                <a href="/admin/commissionRate/edit/<%= commissionRate.id %>"><i class="bi bi-pencil-square"></i></a>
                             </td>
                         </tr>
                     <% }) %>

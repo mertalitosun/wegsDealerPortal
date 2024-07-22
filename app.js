@@ -13,6 +13,7 @@ const Users = require("./models/users");
 const Roles = require("./models/roles");
 const Customers = require("./models/customers");
 const Packages = require("./models/packages");
+const CommissionRates = require("./models/commissionRates");
 //Role ilişki
 Users.belongsToMany(Roles, { through: 'userRoles' ,timestamps:false});
 Roles.belongsToMany(Users, { through: 'userRoles' ,timestamps:false});
@@ -23,6 +24,7 @@ Users.belongsTo(Users, { as: 'reference', foreignKey: 'referenceBy', targetKey: 
 //Paket - müşteri
 Packages.hasMany(Customers, { foreignKey: 'packageId' });
 Customers.belongsTo(Packages, { foreignKey: 'packageId' });
+
 
 
 

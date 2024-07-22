@@ -2,9 +2,49 @@ const Roles = require("../models/roles");
 const Users = require("../models/users");
 const Customers = require("../models/customers");
 const Packages = require("../models/packages");
+const CommissionRates = require("../models/commissionRates");
 
 
+exports.post_commissionRate_edit = async (req, res) => {
+  const id = req.params.id;
+  const {name, commissionRate} = req.body;
 
+  try{
+    const commissionRates = await CommissionRates.findOne({where:{id}});
+    commissionRates.name = name;
+    commissionRates.rate = commissionRate;
+    await commissionRates.save();
+    res.redirect("/admin/commissionRates");
+  }catch(err){
+    console.log(err)
+  }
+};
+exports.get_commissionRate_edit = async (req, res) => {
+  const id = req.params.id;
+  try{
+    const commissionRate = await CommissionRates.findOne({where:{id}});
+
+    res.render("admin/commissionRates/commissionRateEdit",{
+      title: "Komisyon Düzenle",
+      commissionRate:commissionRate,
+    });
+  }catch(err){
+    console.log(err)
+  }
+};
+
+exports.get_commissionRates = async (req, res) => {
+  try{
+    const commissionRates = await CommissionRates.findAll();
+    res.render("admin/commissionRates/commissionRates", {
+      title: "Komisyonlar",
+      commissionRates: commissionRates
+    });
+  }catch(err){
+    console.log(err)
+  }
+};
+//Paket
 exports.post_package_edit = async (req, res) => {
   const packageId = req.params.id;
   const {packageName, packagePrice} = req.body;
@@ -83,6 +123,8 @@ exports.get_packages = async(req,res)=>{
     console.log(err)
   }
 }
+
+
 //Bayi
 exports.get_user_details = async (req, res) => {
   const userId = req.params.id
@@ -101,20 +143,50 @@ exports.get_user_details = async (req, res) => {
       }
     ]});
     const customerCount = customers.length
-    const commissionRate = 0.10;
+    
     const users = await Users.findByPk(userId, {include:[{model:Roles},
       {model:Users,
         as:"reference",
         attributes:["id","firstName","lastName"]
-      }
+      },
     ]})
+
+    const subDealers = await Users.findAll({where:{referenceBy:users.referenceCode}})
+    let subCustomers = [];
+
+    if (subDealers.length > 0) {
+      for (const subDealer of subDealers) {
+        const customersForSubDealer = await Customers.findAll({
+          where: { addedBy: subDealer.id },
+          include: [
+            {
+              model: Users,
+              attributes: ["firstName", "referenceCode"]
+            },
+            {
+              model: Packages,
+              attributes: ["packageName", "packagePrice"]
+            }
+          ]
+        });
+        subCustomers = subCustomers.concat(customersForSubDealer);
+      }
+    }
+
+    let commissionRate = await CommissionRates.findAll({where:{name:"Bayi Müşterisi"}});
+    let subDealerCommissionRate = await CommissionRates.findAll({where:{name:"Alt Bayi Müşterisi"}});
+    commissionRate = commissionRate[0].dataValues.rate
+    subDealerCommissionRate = subDealerCommissionRate[0].dataValues.rate
     res.render("admin/userDetails",{
       title: "Bayi Detay",
       customers:customers,
       users:users,
       customerCount:customerCount,
-      commissionRate:commissionRate
+      subCustomers:subCustomers,
+      commissionRate:commissionRate,
+      subDealerCommissionRate:subDealerCommissionRate
     });
+    
   }catch(err){
     console.log(err)
   }
@@ -130,10 +202,12 @@ exports.get_dealers = async (req, res) => {
     console.log(err)
   }
 };
+
+
 //Roles
 exports.post_role_edit = async (req, res) => {
   const roleId = req.params.id;
-  const roleName = req.body.roleName;
+  const {roleName} = req.body;
   try{
     const roles = await Roles.findOne({where:{id:roleId}});
     roles.roleName = roleName;
@@ -180,10 +254,10 @@ exports.get_role_delete = async (req, res) => {
   }
 };
 exports.post_role_create = async (req, res) => {
-  const roleName = req.body.roleName;
+  const {roleName}=req.body
   try{
     await Roles.create({
-      roleName:roleName
+      roleName:roleName,
     })
     res.redirect("/admin/roles");
   }catch(err){

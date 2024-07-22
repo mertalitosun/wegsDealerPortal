@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../../partials/head') %>
+<body>
+    <%- include('../../partials/nav') %>
+    <div class="container mt-5">
+        <form method="post">
+            <div class="mb-3">
+              <label for="name" class="form-label">Komisyon Adı</label>
+              <input type="text" class="form-control" id="name" name="name" value="<%= commissionRate.name %>">
+            </div>
+            <div class="mb-3">
+                <label for="commissionRate" class="form-label">Komisyon Oranı</label>
+                <input type="text" class="form-control" id="commissionRate" name="commissionRate" value="<%= commissionRate.rate %>" placeholder="Komisyon oranını 100'e bölüp yazınız. Örn: %10 için (10/100 = 0.10)">
+            </div>
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+        </form>
+    </div>
+    <%- include('../../partials/script') %>
+</body>
+</html>

@@ -4,6 +4,12 @@ const adminController = require("../controller/admin");
 const isAuth = require("../middlewares/auth");
 const {isAdmin} = require("../middlewares/isAccess");
 
+
+router.post("/admin/commissionRate/edit/:id",isAuth,isAdmin,adminController.post_commissionRate_edit);
+router.get("/admin/commissionRate/edit/:id",isAuth,isAdmin,adminController.get_commissionRate_edit);
+router.get("/admin/commissionRates",isAuth,isAdmin,adminController.get_commissionRates);
+
+//paket
 router.post("/admin/package/edit/:id",isAuth,isAdmin,adminController.post_package_edit);
 router.get("/admin/package/edit/:id",isAuth,isAdmin,adminController.get_package_edit);
 router.post("/admin/package/delete/:id",isAuth,isAdmin,adminController.post_package_delete);

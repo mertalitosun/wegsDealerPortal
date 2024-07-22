@@ -38,7 +38,8 @@
                             </td>
                             <td>
                                 <% users.roles.forEach(role => { %>
-                                    <%= role.roleName %><br>
+                                    <li><%= role.roleName %></li>
+
                                 <% }) %>
                             </td>
                             <td>
@@ -66,16 +67,16 @@
                         <th>Email</th>
                         <th>Telefon</th>
                         <th>Kayıt Yapan Bayi</th>
-                        <th>Kayıt Yapan Bayi Kodu</th>
+                        <th>Kayıt Tarihi</th>
                         <th>Satın Alınan Paket</th>
                         <th>Paket Fiyatları</th>
-                        <th>Hakediş (%10)</th>
+                        <th>Hakediş</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% let totalProgressPrice = 0%>
                     <%  customers.forEach(customer => { %>
-                        <%  totalProgressPrice += customer.package.packagePrice * commissionRate;%>
+                        <%  totalProgressPrice += customer.package.packagePrice * commissionRate%>
                     <% }) %>
             
                     <% customers.forEach(customer => { %>
@@ -99,7 +100,8 @@
                                 <%= customer.user.firstName %>
                             </td>
                             <td>
-                                <%= customer.user.referenceCode %>
+                                <% const createdAt = new Date(customer.createdAt); %>
+                                <%= createdAt.getDate().toString().padStart(2, '0') %>/<%= (createdAt.getMonth() + 1).toString().padStart(2, '0') %>/<%= createdAt.getFullYear() %>
                             </td>
                             <td>
                                 <%= customer.package.packageName %>
@@ -108,12 +110,68 @@
                                 ₺<%= customer.package.packagePrice %>
                             </td>
                             <td>
-                                ₺<%= customer.package.packagePrice * commissionRate%>
+                                ₺<%=  customer.package.packagePrice * commissionRate%>
                             </td>
+                           
                         </tr>
                     <% }) %>
                 </tbody>
             </table>
+            <% if (subCustomers.length > 0 ) { %>
+                <table class="table table-bordered table-striped table-info ">
+                    <thead>
+                        <tr>
+                            <th>Ad</th>
+                            <th>Soyad</th>
+                            <th>Şirket</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>Kayıt Yapan Bayi</th>
+                            <th>Kayıt Tarihi</th>
+                            <th>Satın Alınan Paket</th>
+                            <th>Paket Fiyatları</th>
+                            <th>Hakediş</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <% subCustomers.forEach(subCustomer => { %>
+                            <tr >
+                                <td>
+                                    <%= subCustomer.firstName %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.lastName %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.organization %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.email %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.phone %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.user.firstName %>
+                                </td>
+                                <td>
+                                    <% const createdAt = new Date(subCustomer.createdAt); %>
+                                    <%= createdAt.getDate().toString().padStart(2, '0') %>/<%= (createdAt.getMonth() + 1).toString().padStart(2, '0') %>/<%= createdAt.getFullYear() %>
+                                </td>
+                                <td>
+                                    <%= subCustomer.package.packageName %>
+                                </td>
+                                <td>
+                                    ₺<%= subCustomer.package.packagePrice %>
+                                </td>
+                                <td>
+                                    ₺<%=  subCustomer.package.packagePrice * subDealerCommissionRate%>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+            <% } %>
         </div>
         <div class="p-3 bg-light d-flex align-items-center">
             <span>Toplam Hakediş: <%= totalProgressPrice %></span>
