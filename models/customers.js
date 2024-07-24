@@ -26,7 +26,7 @@ const Customers = sequelize.define("customers",{
     price:{
         type:DataTypes.DECIMAL(10,2),
         allowNull:false
-    }
+    },
 })
 
 module.exports = Customers;

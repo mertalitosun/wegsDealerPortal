@@ -1,7 +1,7 @@
 const Users = require("../models/users");
 const Customers = require("../models/customers");
 const Dealers = require("../models/dealers");
-
+const Sequelize = require("sequelize");
 
 //müşteri
 exports.post_customer_edit = async (req, res) => {
@@ -152,67 +152,163 @@ exports.get_dealer_create = async(req,res) =>{
     title:"Bayi Kayıt Formu"
   })
 }
-exports.get_dealer_details = async (req, res) => {
-  const userId = req.params.id
-  try{
-    
-    const dealers = await Dealers.findByPk(userId,{include:[{
-      as:"reference",
-      model:Dealers,
-      attributes:["firstName"]
-    }]});
-    
-    const customers = await Customers.findAll({where:{
-      addedBy:userId
-    },include:[{
-      model:Dealers,
-      attributes:["firstName", "dealerCommission","subDealerCommission"]
-    }]});
+
+//Bayi - Alt Bayi Müşterileri
+exports.get_dealer_subCustomers = async (req, res) => {
+  const id = req.params.id;
+  const { startDate, endDate } = req.query;
+
+  // Parse dates
+  const parsedStartDate = startDate ? new Date(startDate) : null;
+  const parsedEndDate = endDate ? new Date(endDate) : null;
+
+  try {
+    const dealers = await Dealers.findByPk(id, {
+      include: [{
+        as: "reference",
+        model: Dealers,
+        attributes: ["firstName"]
+      }]
+    });
+
+    const customers = await Customers.findAll({
+      where: {
+        addedBy: id
+      },
+      include: [{
+        model: Dealers,
+        attributes: ["firstName", "dealerCommission", "subDealerCommission"]
+      }]
+    });
 
     const customerCount = customers.length;
 
-    const subDealers = await Dealers.findAll({where:{referenceBy:userId},
-    include:[{
-      as:"reference",
-      model:Dealers,
-      attributes:["firstName", "dealerCommission","subDealerCommission"]
-    }]})
+    const subDealers = await Dealers.findAll({
+      where: { referenceBy: id },
+      include: [{
+        as: "reference",
+        model: Dealers,
+        attributes: ["firstName", "dealerCommission", "subDealerCommission"]
+      }]
+    });
+
+    let subCustomers = [];
+
+    if (subDealers.length > 0) {
+      for (const subDealer of subDealers) {
+        const whereConditions = { addedBy: subDealer.id };
+        if (parsedStartDate && parsedEndDate) {
+          const endDateWithTime = new Date(parsedEndDate);
+          endDateWithTime.setDate(endDateWithTime.getDate() + 1);
+          whereConditions.createdAt = {
+            [Sequelize.Op.between]: [parsedStartDate, endDateWithTime]
+          };
+        }
+
+        const customersForSubDealer = await Customers.findAll({
+          where: whereConditions,
+          include: [{
+            model: Dealers,
+          }]
+        });
+        subCustomers = subCustomers.concat(customersForSubDealer);
+      }
+    }
+
+    const totalSubCommission = subCustomers.reduce((total, subCustomer) => {
+      return total + (subCustomer.price * dealers.subDealerCommission);
+    }, 0);
+
+    res.render("admin/subCustomers", {
+      title: `${dealers.firstName} || Bayi Detay || Alt Bayi Müşterileri`,
+      subCustomers: subCustomers,
+      customerCount: customerCount,
+      dealers: dealers,
+      subDealers: subDealers,
+      subDealerCommission: dealers.subDealerCommission,
+      totalSubCommission: totalSubCommission.toFixed(2)
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+//Bayi Müşterileri
+exports.get_dealer_details = async (req, res) => {
+  const userId = req.params.id;
+  const { startDate, endDate } = req.query;
+
+  const parsedStartDate = startDate ? new Date(startDate) : null;
+  const parsedEndDate = endDate ? new Date(endDate) : null;
+
+  try {
+    const dealers = await Dealers.findByPk(userId, {
+      include: [{
+        as: "reference",
+        model: Dealers,
+        attributes: ["firstName"]
+      }]
+    });
+
+    const whereConditions = { addedBy: userId };
+    if (parsedStartDate && parsedEndDate) {
+      whereConditions.createdAt = {
+        [Sequelize.Op.between]: [parsedStartDate, parsedEndDate]
+      };
+    }
+
+    const customers = await Customers.findAll({
+      where: whereConditions,
+      include: [{
+        model: Dealers,
+        attributes: ["firstName", "dealerCommission", "subDealerCommission"]
+      }]
+    });
+
+    const customerCount = customers.length;
+
+    const subDealers = await Dealers.findAll({
+      where: { referenceBy: userId },
+      include: [{
+        as: "reference",
+        model: Dealers,
+        attributes: ["firstName", "dealerCommission", "subDealerCommission"]
+      }]
+    });
+
     let subCustomers = [];
 
     if (subDealers.length > 0) {
       for (const subDealer of subDealers) {
         const customersForSubDealer = await Customers.findAll({
           where: { addedBy: subDealer.id },
-          include:[{
-            model:Dealers,
+          include: [{
+            model: Dealers,
           }]
         });
         subCustomers = subCustomers.concat(customersForSubDealer);
       }
     }
+
     const totalCommission = customers.reduce((total, customer) => {
       return total + (customer.price * dealers.dealerCommission);
     }, 0);
-    
-    const totalSubCommission = subCustomers.reduce((total, subCustomer) => {
-      return total + (subCustomer.price * dealers.subDealerCommission);
-    }, 0);
-    res.render("admin/userDetails",{
+
+    res.render("admin/userDetails", {
       title: `${dealers.firstName} || Bayi Detay`,
-      customers:customers,
-      customerCount:customerCount,
-      subCustomers:subCustomers,
-      dealers:dealers,
-      subDealers:subDealers,
-      subDealerCommission:dealers.subDealerCommission,
-      totalCommission:totalCommission.toFixed(2),
-      totalSubCommission:totalSubCommission.toFixed(2)
+      customers: customers,
+      customerCount: customerCount,
+      subCustomers: subCustomers,
+      dealers: dealers,
+      totalCommission: totalCommission.toFixed(2),
     });
-    
-  }catch(err){
-    console.log(err)
+
+  } catch (err) {
+    console.log(err);
   }
 };
+
+
 exports.get_dealers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; 

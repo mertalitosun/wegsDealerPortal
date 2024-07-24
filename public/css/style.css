@@ -62,9 +62,36 @@ a{
     background-color: #edeeee;
 }
 .customerBtn:hover, .subCustomerBtn:hover{
+    color: #fff;
     background: #6e96c8;
 
 }
-.activeBtn{
+.filterBtn, .filterReset{
+    color: #fff;
     background: #82acdf;
 }
+.filterBtn:hover, .filterReset:hover{
+    color: #fff;
+    background: #6e96c8;
+}
+.activeBtn{
+    color: #fff;
+    background: #82acdf;
+}
+
+@media screen and (max-width: 650px) {
+    .allCustomers{
+        padding: 1rem;
+    }
+    .allCustomersNav{
+        align-items: center;
+        flex-direction: column;
+    }
+    .filterForm{
+        display: block !important;
+    }
+    .filterBtn, .filterReset{
+        margin: 1px;
+        width: 100%;
+    }
+  }
