@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+    <%- include('../partials/nav') %>
+    <div class="container mt-5 ">
+        <form method="post">
+            <div class="mb-3">
+                <label for="firstName" class="form-label">Ad</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Ad" class="form-control" required>
+            </div>
+    
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Soyad</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Soyad" class="form-control" required>
+            </div>
+    
+            <div class="mb-3">
+                <label for="organization" class="form-label">Şirket</label>
+                <input type="text" id="organization" name="organization" placeholder="Şirket" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Fiyat</label>
+                <input type="number" id="price" name="price" placeholder="₺500" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Kaydet</button>
+        </form>
+    </div>
+</body>
+</html>

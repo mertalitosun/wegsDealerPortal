@@ -1,0 +1,35 @@
+<h3 class="text-center">Müşteriler</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Kayıt Tarihi</th>
+            <th>Paket Fiyatları</th>
+            <th>Hakediş</th>
+            <th>Düzenle</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% let totalProgressPrice = 0%>
+        <%  customers.forEach(customer => { %>
+            <%  totalProgressPrice += customer.price * dealers.dealerCommission%>
+        <% }) %>
+
+        <% customers.forEach(customer => { %>
+            <tr>
+                <td>
+                    <% const createdAt = new Date(customer.createdAt); %>
+                    <%= createdAt.getDate().toString().padStart(2, '0') %>/<%= (createdAt.getMonth() + 1).toString().padStart(2, '0') %>/<%= createdAt.getFullYear() %>
+                </td>
+                <td>
+                    ₺<%= customer.price %>
+                </td>
+                <td>
+                    ₺<%=  (customer.price  * customer.dealer.dealerCommission).toFixed(2)%>
+                </td>
+                <td>
+                    <a href="/admin/customer/edit/<%= customer.id %>" class="edit"><i class="bi bi-pencil-square"></i></a>
+                </td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>

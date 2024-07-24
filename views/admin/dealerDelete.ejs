@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+
+<body>
+  <%- include('../partials/nav') %>
+    <div class="container mt-5">
+        <div class="bg-light p-3 d-flex align-items-center justify-content-between">
+          <p>
+            <b>"<%= dealers.firstName %>"</b> İsimli bayiyi silmek istiyor musun?
+          </p>
+          <form method="post">
+              <button type="submit" class="btn text-danger">Sil</button>
+              <a href="/admin/dealers">Vazgeç</a>
+          </form>
+        </div>
+      </div>
+    <%- include('../partials/script') %>
+</body>
+</html>

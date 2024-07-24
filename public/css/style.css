@@ -1,0 +1,70 @@
+.dealer-description{
+    background-color: #edeeee;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    border-radius: .5rem;
+}
+.dealer-customers{
+    width: 100%;
+}
+.subDealer-customers{
+    width: 100%;
+    
+}
+table th, table td{
+   text-align: center;
+}
+a{
+    text-decoration: none;
+}
+.customerAdd{
+    font-size: 20px;
+    color: #06D001;
+}
+.dealerAdd{
+    font-size: 20px;
+    color: #6EACDA;
+}
+
+.edit{
+    font-size: 20px;
+    color: #03346E;
+}
+
+.delete{
+    font-size: 20px;
+    color: #FF0000;
+}
+
+.subDealerCustomers, .dealerCustomers{
+    border-radius: .5rem;
+    margin-top: 10px;
+    padding: 5rem;
+    color: #fff;
+    background-color: #3a77c2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.allCustomers{
+    width: 100%;
+    background-color: #edeeee;
+    padding: 5rem;
+    margin-top: 20px;
+    border-radius: .5rem;
+}
+.allCustomers .table th, .allCustomers .table td{
+    background-color: #edeeee !important;
+    border-color: rgba(0, 0, 0, 0.2);
+}
+.customerBtn, .subCustomerBtn{
+    background-color: #edeeee;
+}
+.customerBtn:hover, .subCustomerBtn:hover{
+    background: #6e96c8;
+
+}
+.activeBtn{
+    background: #82acdf;
+}

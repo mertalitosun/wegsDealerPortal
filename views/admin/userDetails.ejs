@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+    <%- include('../partials/nav') %>
+    <div class="container-fluid mt-5 d-flex align-items-center flex-column">
+        <div class="dealer-description">
+           <%- include('../partials/dealers') %>
+        </div>
+        
+        <div class="allCustomers w-100">
+            <!-- <form action="/admin/dealer/details/<%= dealers.id %>" method="get">
+                <div class="form-group">
+                    <label for="startDate">Başlangıç Tarihi:</label>
+                    <input type="date" id="startDate" name="startDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="endDate">Bitiş Tarihi:</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Filtrele</button>
+            </form>  -->
+            <div class="allCustomersNav d-flex justify-content-between">
+                <div class="customer-switch">
+                    <button class="btn customerBtn">Müşteriler</button>
+                    <% if (subCustomers.length > 0 ) { %>
+                        <button class="btn subCustomerBtn">Alt Bayi Müşterileri</button>
+                    <% } %>
+                </div>
+                <div class="total-commission mt-3">
+                    <p>Toplam Hakediş (Bayi): ₺<%= totalCommission %></p>
+                    <p>Toplam Hakediş (Alt Bayi): ₺<%= totalSubCommission %></p>
+                </div>
+            </div>
+            <div class="dealer-customers mt-3">
+                <div class="table-responsive">
+                    <% if (customers.length > 0) { %>
+                      <%- include('../partials/dealerCustomers') %>
+                    <% } %>
+                </div>
+            </div>
+            <div class="subDealer-customers">
+                <div class="table-responsive">
+                    <% if (subCustomers.length > 0 ) { %>
+                        <%- include('../partials/subDealerCustomers') %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%- include('../partials/script') %>
+    <script src="/static/js/userDetails.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+    <%- include('../partials/nav') %>
+    <div class="container-fluid mt-5">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Ad</th>
+                        <th>Soyad</th>
+                        <th><a href="/admin/dealer/create/<%= userId %>" class="dealerAdd"><i class="bi bi-shop"></i> Bayi Ekle</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% dealers.forEach(dealer => { %>
+                        <tr>
+                            <td>
+                                <%= dealer.firstName %>
+                            </td>
+                            <td>
+                                <%= dealer.lastName %>
+                            </td>
+                            <td class="d-flex justify-content-around">
+                                <a href="/admin/dealer/details/<%= dealer.id %>" class="edit"><i class="bi bi-search"></i> İncele</a>
+                                <!-- <a href="/admin/dealer/delete/<%= dealer.id %>" class="delete"><i class="bi bi-trash"></i></a> -->
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/admin/dealers?page=<%= currentPage - 1 %>">Previous</a>
+                        </li>
+                    <% } %>
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link" href="/admin/dealers?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                    <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/admin/dealers?page=<%= currentPage + 1 %>">Next</a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+       
+    </div>
+    <%- include('../partials/script') %>
+</body>
+</html>

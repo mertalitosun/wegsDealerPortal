@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+    <%- include('../partials/nav') %>
+    <div class="container mt-5 ">
+        <form method="post">
+            <div class="mb-3">
+                <label for="firstName" class="form-label">Ad</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Ad" class="form-control" required value="<%= dealers.firstName %>">
+            </div>
+    
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Soyad</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Soyad" class="form-control" required value="<%= dealers.lastName %>">
+            </div>
+    
+            <div class="mb-3">
+                <label for="dealerCommission" class="form-label">Bayi Komisyonu</label>
+                <input type="number" id="dealerCommission" name="dealerCommission" placeholder="Kendi müşterilerinden elde edeceği oran" class="form-control" required value="<%= dealers.dealerCommission %>" step="0.01">
+            </div>
+            <div class="mb-3">
+                <label for="subDealerCommission" class="form-label">Alt Bayi Komisyonu</label>
+                <input type="number" id="subDealerCommission" name="subDealerCommission" placeholder="Alt bayilerin müşterilerinden elde edeceği oran" class="form-control" required value="<%= dealers.subDealerCommission %>" step="0.01">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Kaydet</button>
+        </form>
+    </div>
+</body>
+</html>

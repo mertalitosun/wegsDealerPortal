@@ -1,0 +1,53 @@
+<div class="table-responsive">
+    <h3 class="text-center">Bayi Bilgileri</h3>
+    <hr>
+    <table class="w-100">
+        <thead>
+            <tr>
+                <th>Ad</th>
+                <th>Soyad</th>
+                <th>Müşteri Sayısı</th>
+                <% if (dealers.referenceBy) { %>
+                 <th>Referans Olan Bayi</th>
+                <% } %>
+                <th>Bayi Komisyon Oranı</th>
+                <th>Alt Bayi Komisyon Oranı</th>
+                <th>Bayi Ekle</th>
+                <th>Müşteri Ekle</th>
+                <th>Düzenle</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td>
+                        <%= dealers.firstName %>
+                    </td>
+                    <td>
+                        <%= dealers.lastName %>
+                    </td>
+                    <td>
+                        <%= customerCount %>
+                    </td>
+                    <% if (dealers.referenceBy) { %>
+                        <td><a href="/admin/dealer/details/<%= dealers.referenceBy%>"><%= dealers.reference.firstName %></a></td>
+                    <% } %>
+                    <td>
+                        <%= dealers.dealerCommission %>
+                    </td>
+                    <td>
+
+                        <%= dealers.subDealerCommission %>
+                    </td>
+                    <td>
+                        <a href="/admin/<%= dealers.firstName %>/dealer/create/<%= dealers.id %>" class="dealerAdd"><i class="bi bi-shop"></i></a>
+                    </td>
+                    <td>
+                        <a href="/admin/customer/create/<%= dealers.id %>" class="customerAdd"><i class="bi bi-person"></i></a>
+                    </td>
+                    <td>
+                        <a href="/admin/dealer/edit/<%= dealers.id %>" class="edit"><i class="bi bi-pencil-square"></i> </a>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+</div>
