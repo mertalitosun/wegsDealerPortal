@@ -8,9 +8,16 @@
            <%- include('../partials/dealers') %>
         </div>
         
-       
         <div class="allCustomers w-100">
-            <% if (subCustomers.length > 0 || customers.length > 0) { %>
+            <% if (subCustomers.length < 1 && customers.length < 1) { %>
+                <div class="no-customers-message">
+                    <h4 class="text-center">Henüz Müşteri veya Alt Bayi müşterisi mevcut değil</h4>
+                    <div class="d-flex justify-content-center align-items-center mt-5">
+                        <a href="/admin/<%= dealers.firstName %>/dealer/create/<%= dealers.id %>" class="btn dealerAdd"><i class="bi bi-shop"></i> Alt Bayi Ekle</a>
+                        <a href="/admin/customer/create/<%= dealers.id %>" class="btn customerAdd"><i class="bi bi-person"></i> Müşteri Ekle</a>
+                    </div>
+                </div>
+            <% } else { %>
                 <form action="/admin/dealer/details/<%= dealers.id %>" method="get" class="d-flex justify-content-between align-items-end filterForm">
                     <%- include('../partials/customerFilter') %>
                     <a href="/admin/dealer/details/<%= dealers.id %>/" class="btn filterReset">Sıfırla</a>
@@ -30,7 +37,7 @@
                 <div class="dealer-customers mt-3">
                     <div class="table-responsive">
                         <% if (customers.length > 0) { %>
-                          <%- include('../partials/dealerCustomers') %>
+                            <%- include('../partials/dealerCustomers') %>
                         <% } %>
                     </div>
                 </div>
@@ -42,13 +49,6 @@
                     </div>
                 </div>
             <% } %>
-            <div>
-                <h4 class="text-center">Henüz Müşteri veya Alt Bayi müşterisi mevcut değil</h4>
-                <div class="d-flex justify-content-center align-items-center mt-5">
-                    <a href="/admin/<%= dealers.firstName %>/dealer/create/<%= dealers.id %>" class="btn dealerAdd"><i class="bi bi-shop"></i> Alt Bayi Ekle</a>
-                    <a href="/admin/customer/create/<%= dealers.id %>" class="btn customerAdd"><i class="bi bi-person"></i> Müşteri Ekle</a>
-                </div>
-            </div>
         </div>
     </div>
     <%- include('../partials/script') %>
@@ -61,30 +61,32 @@
             const subDealerCustomers = document.querySelector(".subDealer-customers");
             const totalCommission = document.querySelector(".total-commission");
             const totalSubCommission = document.querySelector(".total-sub-commission");
-            customerBtn.classList.add("activeBtn");
-            subDealerCustomers.style.display="none";
-            totalSubCommission.style.display="none";
-            customerBtn.addEventListener("click", function() {
-                subCustomerBtn.classList.remove("activeBtn");
+            
+            if (customerBtn) {
                 customerBtn.classList.add("activeBtn");
-
                 subDealerCustomers.style.display="none";
-                dealerCustomers.style.display="block";
-
                 totalSubCommission.style.display="none";
-                totalCommission.style.display="block";
-            });
+                
+                customerBtn.addEventListener("click", function() {
+                    if (subCustomerBtn) subCustomerBtn.classList.remove("activeBtn");
+                    customerBtn.classList.add("activeBtn");
+                    subDealerCustomers.style.display="none";
+                    dealerCustomers.style.display="block";
+                    totalSubCommission.style.display="none";
+                    totalCommission.style.display="block";
+                });
 
-            subCustomerBtn.addEventListener("click", function() {
-                customerBtn.classList.remove("activeBtn");
-                subCustomerBtn.classList.add("activeBtn");
-
-                subDealerCustomers.style.display="block";
-                dealerCustomers.style.display="none";
-
-                totalSubCommission.style.display="block";
-                totalCommission.style.display="none";
-            });
+                if (subCustomerBtn) {
+                    subCustomerBtn.addEventListener("click", function() {
+                        customerBtn.classList.remove("activeBtn");
+                        subCustomerBtn.classList.add("activeBtn");
+                        subDealerCustomers.style.display="block";
+                        dealerCustomers.style.display="none";
+                        totalSubCommission.style.display="block";
+                        totalCommission.style.display="none";
+                    });
+                }
+            }
         });
     </script>
 </body>
