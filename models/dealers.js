@@ -24,7 +24,12 @@ const Dealers = sequelize.define("dealers",{
     referenceBy:{
         type:DataTypes.INTEGER,
         allowNull:true
-    },  
+    },
+    status:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:true,
+        allowNull:false
+    }
 })
 
 module.exports = Dealers;

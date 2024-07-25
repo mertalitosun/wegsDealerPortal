@@ -1,3 +1,7 @@
+const startDate = document.getElementById("startDate");
+const endDate = document.getElementById("endDate");
+
+
 function getTodayDate() {
   const today = new Date();
   const year = today.getFullYear();
@@ -8,6 +12,11 @@ function getTodayDate() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const todayDate = getTodayDate();
-  document.getElementById("startDate").value = todayDate;
-  document.getElementById("endDate").value = todayDate;
+  startDate.value = todayDate;
+  endDate.value = todayDate;
+
+  endDate.setAttribute("min", startDate.value);
+  startDate.addEventListener("change",()=>{
+  endDate.setAttribute("min", startDate.value);
+  })
 });

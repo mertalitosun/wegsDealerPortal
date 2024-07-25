@@ -5,7 +5,29 @@
 <body>
      <%- include('../partials/nav') %>
     <div class="container mt-5 ">
+        <h4>Müşteri Güncelle</h4>
+        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            <div class="alert alert-danger">
+                <% errors.forEach(function(error) { %>
+                    <p><%= error.msg %></p>
+                <% }); %>
+            </div>
+        <% } %>
         <form method="post">
+            <div class="mb-3">
+                <label for="firstName" class="form-label">Ad</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Ad" class="form-control" required value="<%= customer.firstName %>">
+            </div>
+    
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Soyad</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Soyad" class="form-control" required value="<%= customer.lastName %>">
+            </div>
+    
+            <div class="mb-3">
+                <label for="organization" class="form-label">Şirket</label>
+                <input type="text" id="organization" name="organization" placeholder="Şirket" class="form-control" required value="<%= customer.organization %>">
+            </div>
             <div class="mb-3">
                 <label for="price" class="form-label">Fiyat</label>
                 <input type="number" id="price" name="price" placeholder="₺500" class="form-control" required value="<%= customer.price %>">

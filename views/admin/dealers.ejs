@@ -8,6 +8,7 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>Durum</th>
                         <th>Ad</th>
                         <th>Soyad</th>
                         <th><a href="/admin/dealer/create/<%= userId %>" class="dealerAdd"><i class="bi bi-shop"></i> Bayi Ekle</a></th>
@@ -16,6 +17,9 @@
                 <tbody>
                     <% dealers.forEach(dealer => { %>
                         <tr>
+                            <td>
+                                <span class="status <%= dealer.status ? "active-status" : "inActive-status" %>"><%= dealer.status ? "Aktif" : "Pasif" %></span>
+                            </td>
                             <td>
                                 <%= dealer.firstName %>
                             </td>

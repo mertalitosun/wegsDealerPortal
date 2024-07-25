@@ -3,14 +3,43 @@ const Customers = require("../models/customers");
 const Dealers = require("../models/dealers");
 const Sequelize = require("sequelize");
 
+
 //müşteri
 exports.post_customer_edit = async (req, res) => {
   const id = req.params.id;
-  const {price} = req.body;
+  const {firstName,lastName,organization,price,agreementDate} = req.body;
+  const errors = [];
 
+  if (!firstName || firstName.trim() === '') {
+    errors.push({ msg: 'Ad boş bırakılamaz' });
+  }
+  if (!lastName || lastName.trim() === '') {
+    errors.push({ msg: 'Soyad boş bırakılamaz' });
+  }
+  if (!organization || organization.trim() === '') {
+    errors.push({ msg: 'Organizasyon boş bırakılamaz' });
+  }
+  if (!price || isNaN(price) || price < 0 ) {
+    errors.push({ msg: "Fiyat 0'dan büyük olmalıdır." });
+  }
+  if (!agreementDate || isNaN(agreementDate)) {
+    errors.push({ msg: "Tarih boş bırakılamaz" });
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).render('admin/dealerCreate', {
+      title: 'Müşteri Kayıt Formu',
+      errors: errors,
+      data: { firstName, lastName, organization, price,agreementDate }
+    });
+  }
   try{
     const customer = await Customers.findOne({where:{id}});
+    customer.firstName = firstName,
+    customer.lastName = lastName,
+    customer.organization = organization,
     customer.price = price,
+    customer.agreementDate = agreementDate,
     await customer.save();
     const dealerId = customer.addedBy
     res.redirect(`/admin/dealer/details/${dealerId}`);
@@ -33,13 +62,41 @@ exports.get_customer_edit = async(req,res)=>{
 }
 exports.post_customer_create = async (req, res) => {
   const id = req.params.id
-  const {firstName,lastName,organization,price} = req.body;
+  const {firstName,lastName,organization,price,agreementDate} = req.body;
+  const errors = [];
+  if (!firstName || firstName.trim() === '') {
+    errors.push({ msg: 'Ad boş bırakılamaz' });
+  }
+  if (!lastName || lastName.trim() === '') {
+    errors.push({ msg: 'Soyad boş bırakılamaz' });
+  }
+  if (!organization || organization.trim() === '') {
+    errors.push({ msg: 'Organizasyon boş bırakılamaz' });
+  }
+  if (!price || isNaN(price) || price < 0 ) {
+    errors.push({ msg: "Fiyat 0'dan büyük olmalıdır." });
+  }
+  if (!agreementDate) {
+    errors.push({ msg: "Tarih boş bırakılamaz" });
+  }
+
+  if (errors.length > 0) {
+    
+    const dealer = await Dealers.findByPk(id);
+    return res.status(400).render(`admin/customerCreate`, {
+      title: 'Müşteri Kayıt Formu',
+      errors: errors,
+      dealer:dealer,
+      data: { firstName, lastName, organization, price ,agreementDate}
+    });
+  }
   try{
-    const customer = Customers.create({
+    const customer = await Customers.create({
       firstName:firstName,
       lastName:lastName,
       organization:organization,
       price:price,
+      agreementDate:agreementDate,
       addedBy: id,
     })
   }catch(err){
@@ -48,28 +105,52 @@ exports.post_customer_create = async (req, res) => {
   res.redirect(`/admin/dealer/details/${id}`);
 };
 exports.get_customer_create = async (req, res) => {
+  const id = req.params.id;
   try{
-    const customers = await Customers.findAll();
+    const dealer = await Dealers.findByPk(id);
     res.render("admin/customerCreate", {
       title: "Müşteri Ekle",
-      customers:customers
+      dealer:dealer
     });
   }catch(err){
     console.log(err)
   }
+    
 };
 
 //Bayi
 exports.post_dealer_edit = async (req, res) => {
   const id = req.params.id;
-  const {firstName,lastName,dealerCommission,subDealerCommission} = req.body;
+  const {firstName,lastName,dealerCommission,subDealerCommission,status} = req.body;
+  let errors = [];
 
+  if (!firstName || firstName.trim() === '') {
+    errors.push({ msg: 'Ad boş bırakılamaz' });
+  }
+  if (!lastName || lastName.trim() === '') {
+    errors.push({ msg: 'Soyad boş bırakılamaz' });
+  }
+  if (!dealerCommission || isNaN(dealerCommission) || dealerCommission < 0 || dealerCommission > 100) {
+    errors.push({ msg: 'Bayi Komisyonu 0 ile 100 arasında olmalıdır' });
+  }
+  if (!subDealerCommission || isNaN(subDealerCommission) || subDealerCommission < 0 || subDealerCommission > 100) {
+    errors.push({ msg: 'Alt Bayi Komisyonu 0 ile 100 arasında olmalıdır' });
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).render('admin/dealerCreate', {
+      title: 'Bayi Kayıt Formu',
+      errors: errors,
+      data: { firstName, lastName, dealerCommission, subDealerCommission, status }
+    });
+  }
   try{
     const dealers = await Dealers.findOne({where:{id}});
-    dealers.firstName = firstName,
-    dealers.lastName = lastName,
-    dealers.dealerCommission = dealerCommission,
-    dealers.subDealerCommission = subDealerCommission,
+    dealers.firstName = firstName;
+    dealers.lastName = lastName;
+    dealers.dealerCommission = (parseFloat(dealerCommission) / 100).toFixed(2);
+    dealers.subDealerCommission = (parseFloat(subDealerCommission) / 100).toFixed(2);
+    dealers.status = status;
     await dealers.save();
     res.redirect(`/admin/dealer/details/${id}`);
   }catch(err){
@@ -116,12 +197,34 @@ exports.get_dealer_delete = async (req, res) => {
 exports.post_admin_dealer_create = async(req,res) =>{
   const id = req.params.id;
   const {firstName,lastName,dealerCommission,subDealerCommission} = req.body;
+  let errors = [];
+
+  if (!firstName || firstName.trim() === '') {
+    errors.push({ msg: 'Ad boş bırakılamaz' });
+  }
+  if (!lastName || lastName.trim() === '') {
+    errors.push({ msg: 'Soyad boş bırakılamaz' });
+  }
+  if (!dealerCommission || isNaN(dealerCommission) || dealerCommission < 0 || dealerCommission > 100) {
+    errors.push({ msg: 'Bayi Komisyonu 0 ile 100 arasında olmalıdır' });
+  }
+  if (!subDealerCommission || isNaN(subDealerCommission) || subDealerCommission < 0 || subDealerCommission > 100) {
+    errors.push({ msg: 'Alt Bayi Komisyonu 0 ile 100 arasında olmalıdır' });
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).render('admin/dealerCreate', {
+      title: 'Bayi Kayıt Formu',
+      errors: errors,
+      data: { firstName, lastName, dealerCommission, subDealerCommission }
+    });
+  }
   try{
     const dealers = await Dealers.create({
       firstName:firstName,
       lastName:lastName,
-      dealerCommission:dealerCommission,
-      subDealerCommission:subDealerCommission,
+      dealerCommission: (parseFloat(dealerCommission) / 100).toFixed(2),
+      subDealerCommission: (parseFloat(subDealerCommission) / 100).toFixed(2),
     });
     res.redirect("/admin/dealers");
   }catch(err){
@@ -133,12 +236,34 @@ exports.post_admin_dealer_create = async(req,res) =>{
 exports.post_dealer_create = async(req,res) =>{
   const id = req.params.id;
   const {firstName,lastName,dealerCommission,subDealerCommission} = req.body;
+  let errors = [];
+
+  if (!firstName || firstName.trim() === '') {
+    errors.push({ msg: 'Ad boş bırakılamaz' });
+  }
+  if (!lastName || lastName.trim() === '') {
+    errors.push({ msg: 'Soyad boş bırakılamaz' });
+  }
+  if (!dealerCommission || isNaN(dealerCommission) || dealerCommission < 0 || dealerCommission > 100) {
+    errors.push({ msg: 'Bayi Komisyonu 0 ile 100 arasında olmalıdır' });
+  }
+  if (!subDealerCommission || isNaN(subDealerCommission) || subDealerCommission < 0 || subDealerCommission > 100) {
+    errors.push({ msg: 'Alt Bayi Komisyonu 0 ile 100 arasında olmalıdır' });
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).render('admin/dealerCreate', {
+      title: 'Bayi Kayıt Formu',
+      errors: errors,
+      data: { firstName, lastName, dealerCommission, subDealerCommission }
+    });
+  }
   try{
     const dealers = await Dealers.create({
       firstName:firstName,
       lastName:lastName,
-      dealerCommission:dealerCommission,
-      subDealerCommission:subDealerCommission,
+      dealerCommission: (parseFloat(dealerCommission) / 100).toFixed(2),
+      subDealerCommission: (parseFloat(subDealerCommission) / 100).toFixed(2),
       referenceBy:id
     });
     res.redirect("/admin/dealers");
@@ -149,91 +274,11 @@ exports.post_dealer_create = async(req,res) =>{
 //Bayi Kayıt - Dealer
 exports.get_dealer_create = async(req,res) =>{
   res.render("admin/dealerCreate",{
-    title:"Bayi Kayıt Formu"
-  })
+    title:"Bayi Kayıt Formu",
+  });
 }
 
-//Bayi - Alt Bayi Müşterileri
-exports.get_dealer_subCustomers = async (req, res) => {
-  const id = req.params.id;
-  const { startDate, endDate } = req.query;
 
-  // Parse dates
-  const parsedStartDate = startDate ? new Date(startDate) : null;
-  const parsedEndDate = endDate ? new Date(endDate) : null;
-
-  try {
-    const dealers = await Dealers.findByPk(id, {
-      include: [{
-        as: "reference",
-        model: Dealers,
-        attributes: ["firstName"]
-      }]
-    });
-
-    const customers = await Customers.findAll({
-      where: {
-        addedBy: id
-      },
-      include: [{
-        model: Dealers,
-        attributes: ["firstName", "dealerCommission", "subDealerCommission"]
-      }]
-    });
-
-    const customerCount = customers.length;
-
-    const subDealers = await Dealers.findAll({
-      where: { referenceBy: id },
-      include: [{
-        as: "reference",
-        model: Dealers,
-        attributes: ["firstName", "dealerCommission", "subDealerCommission"]
-      }]
-    });
-
-    let subCustomers = [];
-
-    if (subDealers.length > 0) {
-      for (const subDealer of subDealers) {
-        const whereConditions = { addedBy: subDealer.id };
-        if (parsedStartDate && parsedEndDate) {
-          const endDateWithTime = new Date(parsedEndDate);
-          endDateWithTime.setDate(endDateWithTime.getDate() + 1);
-          whereConditions.createdAt = {
-            [Sequelize.Op.between]: [parsedStartDate, endDateWithTime]
-          };
-        }
-
-        const customersForSubDealer = await Customers.findAll({
-          where: whereConditions,
-          include: [{
-            model: Dealers,
-          }]
-        });
-        subCustomers = subCustomers.concat(customersForSubDealer);
-      }
-    }
-
-    const totalSubCommission = subCustomers.reduce((total, subCustomer) => {
-      return total + (subCustomer.price * dealers.subDealerCommission);
-    }, 0);
-
-    res.render("admin/subCustomers", {
-      title: `${dealers.firstName} || Bayi Detay || Alt Bayi Müşterileri`,
-      subCustomers: subCustomers,
-      customerCount: customerCount,
-      dealers: dealers,
-      subDealers: subDealers,
-      subDealerCommission: dealers.subDealerCommission,
-      totalSubCommission: totalSubCommission.toFixed(2)
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-//Bayi Müşterileri
 exports.get_dealer_details = async (req, res) => {
   const userId = req.params.id;
   const { startDate, endDate } = req.query;
@@ -252,7 +297,7 @@ exports.get_dealer_details = async (req, res) => {
 
     const whereConditions = { addedBy: userId };
     if (parsedStartDate && parsedEndDate) {
-      whereConditions.createdAt = {
+      whereConditions.agreementDate = {
         [Sequelize.Op.between]: [parsedStartDate, parsedEndDate]
       };
     }
@@ -280,8 +325,15 @@ exports.get_dealer_details = async (req, res) => {
 
     if (subDealers.length > 0) {
       for (const subDealer of subDealers) {
+        const subWhereConditions = { addedBy: subDealer.id };
+        if (parsedStartDate && parsedEndDate) {
+          subWhereConditions.agreementDate = {
+            [Sequelize.Op.between]: [parsedStartDate, parsedEndDate]
+          };
+        }
+
         const customersForSubDealer = await Customers.findAll({
-          where: { addedBy: subDealer.id },
+          where: subWhereConditions,
           include: [{
             model: Dealers,
           }]
@@ -294,17 +346,26 @@ exports.get_dealer_details = async (req, res) => {
       return total + (customer.price * dealers.dealerCommission);
     }, 0);
 
+    const totalSubCommission = subCustomers.reduce((total, subCustomer) => {
+      return total + (subCustomer.price * dealers.subDealerCommission);
+    }, 0);
+
+    const totalEarn = parseFloat(totalCommission) + parseFloat(totalSubCommission);
     res.render("admin/userDetails", {
       title: `${dealers.firstName} || Bayi Detay`,
       customers: customers,
       customerCount: customerCount,
       subCustomers: subCustomers,
       dealers: dealers,
+      subDealerCommission: dealers.subDealerCommission,
+      totalSubCommission: totalSubCommission.toFixed(2),
       totalCommission: totalCommission.toFixed(2),
+      totalEarn: totalEarn.toFixed(2)
     });
 
   } catch (err) {
     console.log(err);
+    res.status(500).send("Internal Server Error");
   }
 };
 

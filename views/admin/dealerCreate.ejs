@@ -5,28 +5,38 @@
 <body>
     <%- include('../partials/nav') %>
     <div class="container mt-5 ">
+        <h4 class="text-center">Bayi Kayıt</h4>
+        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            <div class="alert alert-danger">
+                <% errors.forEach(function(error) { %>
+                    <p><%= error.msg %></p>
+                <% }); %>
+            </div>
+        <% } %>
         <form method="post">
             <div class="mb-3">
                 <label for="firstName" class="form-label">Ad</label>
-                <input type="text" id="firstName" name="firstName" placeholder="Ad" class="form-control" required>
+                <input type="text" id="firstName" name="firstName" placeholder="Ad" class="form-control" required value="<%= typeof data !=="undefined" ? data.firstName : "" %>">
             </div>
     
             <div class="mb-3">
                 <label for="lastName" class="form-label">Soyad</label>
-                <input type="text" id="lastName" name="lastName" placeholder="Soyad" class="form-control" required>
+                <input type="text" id="lastName" name="lastName" placeholder="Soyad" class="form-control" required value="<%= typeof data !=="undefined"? data.lastName : "" %>">
             </div>
     
             <div class="mb-3">
                 <label for="dealerCommission" class="form-label">Bayi Komisyonu</label>
-                <input type="number" id="dealerCommission" name="dealerCommission" placeholder="Kendi müşterilerinden elde edeceği oran" class="form-control" required step="0.01">
-                <div class="form-text">Komisyon oranını 100'e bölüp yazınız ÖRN: %10 için 10/100 = 0.1 </div>
+                <input type="number" id="dealerCommission" name="dealerCommission" placeholder="Kendi müşterilerinden elde edeceği oran" class="form-control" required step="0.01" value="<%= typeof data !=="undefined" ? data.dealerCommission : "" %>">
+                <div class="form-text">Örnek: %20 için sadece 20 yazınız</div>
             </div>
             <div class="mb-3">
                 <label for="subDealerCommission" class="form-label">Alt Bayi Komisyonu</label>
-                <input type="number" id="subDealerCommission" name="subDealerCommission" placeholder="Alt bayilerin müşterilerinden elde edeceği oran" class="form-control" required step="0.01">
-                <div class="form-text">Komisyon oranını 100'e bölüp yazınız ÖRN: %10 için 10/100 = 0.1 </div>
+                <input type="number" id="subDealerCommission" name="subDealerCommission" placeholder="Alt bayilerin müşterilerinden elde edeceği oran" class="form-control" required step="0.01" value="<%= typeof data !=="undefined" ? data.subDealerCommission : "" %>">
+                <div class="form-text">Örnek: %20 için sadece 20 yazınız</div>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Kaydet</button>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            
+            <a href="/admin/dealers" class="btn btn-warning">Vazgeç</a>
         </form>
     </div>
  

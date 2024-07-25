@@ -5,27 +5,53 @@
 <body>
     <%- include('../partials/nav') %>
     <div class="container mt-5 ">
+        <h4 class="text-center">Müşteri Ekle</h4>
+        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            <div class="alert alert-danger">
+                <% errors.forEach(function(error) { %>
+                    <p><%= error.msg %></p>
+                <% }); %>
+            </div>
+        <% } %>
         <form method="post">
             <div class="mb-3">
                 <label for="firstName" class="form-label">Ad</label>
-                <input type="text" id="firstName" name="firstName" placeholder="Ad" class="form-control" required>
+                <input type="text" id="firstName" name="firstName" placeholder="Ad" class="form-control" required value="<%= typeof data !="undefined" ? data.firstName : "" %>">
             </div>
     
             <div class="mb-3">
                 <label for="lastName" class="form-label">Soyad</label>
-                <input type="text" id="lastName" name="lastName" placeholder="Soyad" class="form-control" required>
+                <input type="text" id="lastName" name="lastName" placeholder="Soyad" class="form-control" required value="<%= typeof data !="undefined" ? data.lastName : "" %>">
             </div>
     
             <div class="mb-3">
                 <label for="organization" class="form-label">Şirket</label>
-                <input type="text" id="organization" name="organization" placeholder="Şirket" class="form-control" required>
+                <input type="text" id="organization" name="organization" placeholder="Şirket" class="form-control" required value="<%= typeof data !="undefined" ? data.organization : "" %>">
             </div>
             <div class="mb-3">
                 <label for="price" class="form-label">Fiyat</label>
-                <input type="number" id="price" name="price" placeholder="₺500" class="form-control" required>
+                <input type="number" id="price" name="price" placeholder="₺500" class="form-control" required value="<%= typeof data !="undefined" ? data.price : "" %>">
             </div>
-            <button type="submit" class="btn btn-primary w-100">Kaydet</button>
+            <div class="mb-3">
+                <label for="agreementDate" class="form-label">Sözleşme Tarihi</label>
+                <input type="date" id="agreementDate" name="agreementDate" class="form-control" required value="<%= typeof data !="undefined" ? data.agreementDate : "" %>">
+            </div>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="/admin/dealer/details/<%= dealer.id %>" class="btn btn-warning">Vazgeç</a>
         </form>
     </div>
+    <script>
+        function getTodayDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const todayDate = getTodayDate();
+            document.getElementById("agreementDate").value = todayDate;
+        });
+    </script>
 </body>
 </html>

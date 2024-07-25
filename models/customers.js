@@ -27,6 +27,10 @@ const Customers = sequelize.define("customers",{
         type:DataTypes.DECIMAL(10,2),
         allowNull:false
     },
+    agreementDate:{
+        type:DataTypes.DATE,
+        allowNull:false
+    },
 })
 
 module.exports = Customers;

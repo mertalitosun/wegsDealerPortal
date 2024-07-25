@@ -40,27 +40,28 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 1000 * 30 * 60
+    maxAge: 1000 * 60 * 60 * 24
   },
   store: new SequelizeStore({
     db: sequelize,
-    expiration: 1000 * 60 * 30,
-    checkExpirationInterval: 1000 * 60 * 30 
+    expiration: 1000 * 60 * 60 * 24,
+    checkExpirationInterval: 1000 * 60 * 60 * 24 
   })
 }));
 app.use(require("./middlewares/locals"));
 
 app.use(authRoutes);
 app.use(adminRoutes);
+app.use(require("./middlewares/404"));
 
 // (async () => {
 //   await sequelize.sync({ force: true });
-//   await require("./data/dummyData")();
+//   await require("./data/dummyData")()
 // })();
 
 
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 80;
 app.listen(port, () => {
   console.log(`Sunucu ${port} portunda başlatıldı.`);
 });

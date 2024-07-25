@@ -2,7 +2,10 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Kayıt Tarihi</th>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Şirket</th>
+            <th>Sözleşme Tarihi</th>
             <th>Paket Fiyatları</th>
             <th>Hakediş</th>
         </tr>
@@ -11,7 +14,16 @@
             <% subCustomers.forEach(subCustomer => { %>
             <tr >
                 <td>
-                    <% const createdAt = new Date(subCustomer.createdAt); %>
+                    <%= subCustomer.firstName %>
+                </td>
+                <td>
+                    <%= subCustomer.lastName %>
+                </td>
+                <td>
+                    <%= subCustomer.organization %>
+                </td>
+                <td>
+                    <% const createdAt = new Date(subCustomer.agreementDate); %>
                     <%= createdAt.getDate().toString().padStart(2, '0') %>/<%= (createdAt.getMonth() + 1).toString().padStart(2, '0') %>/<%= createdAt.getFullYear() %>
                 </td>
                 <td>

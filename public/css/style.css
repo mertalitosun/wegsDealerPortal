@@ -59,7 +59,8 @@ a{
     border-color: rgba(0, 0, 0, 0.2);
 }
 .customerBtn, .subCustomerBtn{
-    background-color: #edeeee;
+    color: #82acdf;
+    background: #fff;
 }
 .customerBtn:hover, .subCustomerBtn:hover{
     color: #fff;
@@ -67,18 +68,60 @@ a{
 
 }
 .filterBtn, .filterReset{
+    min-width: 15%;
+    height: max-content;
     color: #fff;
-    background: #82acdf;
+    background: rgb(223, 94, 94);
 }
 .filterBtn:hover, .filterReset:hover{
     color: #fff;
-    background: #6e96c8;
+    background: rgb(196, 76, 76)
 }
 .activeBtn{
     color: #fff;
     background: #82acdf;
 }
+.form-group{
+    min-width: 20%;
+}
+.errorPage .home-page{
+    color: #fff;
+    background: #82acdf;
+}
+.errorPage .home-page:hover{
+    color: #fff;
+    background: #6e96c8;
+}
+.errorPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center; 
+    height: 100vh;
+}
 
+.errorPage .error-image {
+    max-width: 100%;
+    height: auto; 
+}
+.total-commission, .total-sub-commission{
+    cursor: pointer;
+    color: #fff;
+    border-radius: .3rem;
+    padding: .6rem;
+    background-color: #6eae7b;
+}
+.status{
+    color: #fefefe;
+    padding: .2rem .5rem;
+    border-radius: 1rem;
+}
+.active-status{
+    background-color: #06D001;
+}
+.inActive-status{
+    background-color: #ff0000;
+}
 @media screen and (max-width: 650px) {
     .allCustomers{
         padding: 1rem;
@@ -93,5 +136,8 @@ a{
     .filterBtn, .filterReset{
         margin: 1px;
         width: 100%;
+    }
+    .commission{
+        margin: 20px 0px 10px;
     }
   }

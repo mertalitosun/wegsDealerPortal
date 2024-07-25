@@ -5,6 +5,14 @@
 <body>
     <%- include('../partials/nav') %>
     <div class="container mt-5 ">
+        <h4 class="text-center">Bayi Güncelle</h4>
+        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            <div class="alert alert-danger">
+                <% errors.forEach(function(error) { %>
+                    <p><%= error.msg %></p>
+                <% }); %>
+            </div>
+        <% } %>
         <form method="post">
             <div class="mb-3">
                 <label for="firstName" class="form-label">Ad</label>
@@ -18,13 +26,33 @@
     
             <div class="mb-3">
                 <label for="dealerCommission" class="form-label">Bayi Komisyonu</label>
-                <input type="number" id="dealerCommission" name="dealerCommission" placeholder="Kendi müşterilerinden elde edeceği oran" class="form-control" required value="<%= dealers.dealerCommission %>" step="0.01">
+                <input type="number" id="dealerCommission" name="dealerCommission" placeholder="Kendi müşterilerinden elde edeceği oran" class="form-control" required value="<%= parseFloat(dealers.dealerCommission) * 100 %>" step="0.01">
+                <div class="form-text">Örnek: %20 için sadece 20 yazınız</div>
             </div>
             <div class="mb-3">
                 <label for="subDealerCommission" class="form-label">Alt Bayi Komisyonu</label>
-                <input type="number" id="subDealerCommission" name="subDealerCommission" placeholder="Alt bayilerin müşterilerinden elde edeceği oran" class="form-control" required value="<%= dealers.subDealerCommission %>" step="0.01">
+                <input type="number" id="subDealerCommission" name="subDealerCommission" placeholder="Alt bayilerin müşterilerinden elde edeceği oran" class="form-control" required value="<%= parseFloat(dealers.subDealerCommission) * 100 %>" step="0.01">
+                <div class="form-text">Örnek: %20 için sadece 20 yazınız</div>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Kaydet</button>
+            <div class="mb-3">
+                <label for="status" class="form-label">Bayi Aktiflik Durumu</label>
+                <div class="d-flex justify-content-around" style="max-width: 200px;">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="status" id="statusAktif" value="true" <%= dealers.status ? 'checked' : '' %>>
+                        <label class="form-check-label status active-status" for="statusAktif">
+                            Aktif
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="status" id="statusPasif" value="false" <%= !dealers.status ? 'checked' : '' %>>
+                        <label class="form-check-label status inActive-status" for="statusPasif">
+                            Pasif
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="/admin/dealer/details/<%= dealers.id %>" class="btn btn-warning">Vazgeç</a>
         </form>
     </div>
 </body>
