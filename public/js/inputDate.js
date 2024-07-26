@@ -2,18 +2,17 @@ const startDate = document.getElementById("startDate");
 const endDate = document.getElementById("endDate");
 
 
-function getTodayDate() {
+function getTodayDate(day) {
   const today = new Date();
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  const originalDay = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day ? day : originalDay}`;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const todayDate = getTodayDate();
-  startDate.value = todayDate;
-  endDate.value = todayDate;
+  startDate.value = getTodayDate("01");
+  endDate.value = getTodayDate();
 
   endDate.setAttribute("min", startDate.value);
   startDate.addEventListener("change",()=>{

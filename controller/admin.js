@@ -8,7 +8,7 @@ const Sequelize = require("sequelize");
 //müşteri
 exports.post_customer_edit = async (req, res) => {
   const id = req.params.id;
-  const {firstName,lastName,organization,price,agreementDate} = req.body;
+  const {firstName,lastName,organization,price,purchaseDate,productName} = req.body;
   const errors = [];
 
   if (!firstName || firstName.trim() === '') {
@@ -20,28 +20,34 @@ exports.post_customer_edit = async (req, res) => {
   if (!organization || organization.trim() === '') {
     errors.push({ msg: 'Organizasyon boş bırakılamaz' });
   }
+  if (!productName || productName.trim() === '') {
+    errors.push({ msg: 'Hizmet boş bırakılamaz' });
+  }
   if (!price || isNaN(price) || price < 0 ) {
     errors.push({ msg: "Fiyat 0'dan büyük olmalıdır." });
   }
-  if (!agreementDate || isNaN(agreementDate)) {
+  if (!purchaseDate) {
     errors.push({ msg: "Tarih boş bırakılamaz" });
   }
 
   if (errors.length > 0) {
-    return res.status(400).render('admin/dealerCreate', {
+    return res.status(400).render('admin/dealers', {
       title: 'Müşteri Kayıt Formu',
       errors: errors,
-      data: { firstName, lastName, organization, price,agreementDate }
+      data: { firstName, lastName, organization, price,purchaseDate, productName }
     });
   }
   try{
     const customer = await Customers.findOne({where:{id}});
-    customer.firstName = firstName,
-    customer.lastName = lastName,
-    customer.organization = organization,
-    customer.price = price,
-    customer.agreementDate = agreementDate,
+    customer.firstName = firstName;
+    customer.lastName = lastName;
+    customer.organization = organization;
+    const purchase = await Purchases.findOne({where:{customerId:id}});
+    purchase.price = price,
+    purchase.purchaseDate = purchaseDate,
+    purchase.productName = productName,
     await customer.save();
+    await purchase.save();
     const dealerId = customer.addedBy
     res.redirect(`/admin/dealer/details/${dealerId}`);
   }catch(err){
@@ -51,11 +57,15 @@ exports.post_customer_edit = async (req, res) => {
 exports.get_customer_edit = async(req,res)=>{
   const id = req.params.id;
   try{
-    const customer = await Customers.findOne({where:{id}});
-
+    const customer = await Customers.findOne({where:{id},include:[{
+      model:Dealers,
+      attributes:["id"]
+    }]});
+    const purchase = await Purchases.findOne({where:{customerId:id}})
     res.render("admin/customerEdit",{
       title: "Müşteri Düzenle",
       customer:customer,
+      purchase:purchase
     });
   }catch(err){
     console.log(err)
@@ -63,7 +73,7 @@ exports.get_customer_edit = async(req,res)=>{
 }
 exports.post_customer_create = async (req, res) => {
   const id = req.params.id
-  const {firstName,lastName,organization,price,agreementDate} = req.body;
+  const {firstName,lastName,organization,price,purchaseDate,productName} = req.body;
   const errors = [];
   if (!firstName || firstName.trim() === '') {
     errors.push({ msg: 'Ad boş bırakılamaz' });
@@ -74,10 +84,13 @@ exports.post_customer_create = async (req, res) => {
   if (!organization || organization.trim() === '') {
     errors.push({ msg: 'Organizasyon boş bırakılamaz' });
   }
+  if (!productName || productName.trim() === '') {
+    errors.push({ msg: 'Hizmet boş bırakılamaz' });
+  }
   if (!price || isNaN(price) || price < 0 ) {
     errors.push({ msg: "Fiyat 0'dan büyük olmalıdır." });
   }
-  if (!agreementDate) {
+  if (!purchaseDate) {
     errors.push({ msg: "Tarih boş bırakılamaz" });
   }
 
@@ -88,7 +101,7 @@ exports.post_customer_create = async (req, res) => {
       title: 'Müşteri Kayıt Formu',
       errors: errors,
       dealer:dealer,
-      data: { firstName, lastName, organization, price ,agreementDate}
+      data: { firstName, lastName, organization, price ,purchaseDate,productName}
     });
   }
   try{
@@ -96,9 +109,13 @@ exports.post_customer_create = async (req, res) => {
       firstName:firstName,
       lastName:lastName,
       organization:organization,
-      price:price,
-      agreementDate:agreementDate,
       addedBy: id,
+    })
+    const purchase = await Purchases.create({
+      productName:productName,
+      price:price,
+      purchaseDate:agreementDate,
+      customerId:customer.id
     })
   }catch(err){
     console.log(err)
@@ -196,7 +213,6 @@ exports.get_dealer_delete = async (req, res) => {
 
 //Bayi Kayıt - Admin
 exports.post_admin_dealer_create = async(req,res) =>{
-  const id = req.params.id;
   const {firstName,lastName,dealerCommission,subDealerCommission} = req.body;
   let errors = [];
 
@@ -296,27 +312,37 @@ exports.get_dealer_details = async (req, res) => {
       }]
     });
 
-    
-    const whereConditions = { addedBy: userId };
-    if (parsedStartDate && parsedEndDate) {
-      whereConditions.agreementDate = {
-        [Sequelize.Op.between]: [parsedStartDate, parsedEndDate]
-      };
-    }
-
     const customers = await Customers.findAll({
-      where: {addedBy:userId},
+      where: { addedBy: userId },
       include: [{
         model: Dealers,
         attributes: ["firstName", "dealerCommission", "subDealerCommission"]
-      },{
-        model:Purchases,
       }]
     });
 
-    
+    let filteredCustomers = [];
+    if (parsedStartDate && parsedEndDate) {
+      filteredCustomers = await Promise.all(customers.map(async (customer) => {
+        const purchases = await Purchases.findAll({
+          where: {
+            customerId: customer.id,
+            purchaseDate: {
+              [Sequelize.Op.between]: [parsedStartDate, parsedEndDate]
+            }
+          }
+        });
+        return { ...customer.toJSON(), purchases };
+      }));
+    } else {
+      filteredCustomers = await Promise.all(customers.map(async (customer) => {
+        const purchases = await Purchases.findAll({
+          where: { customerId: customer.id }
+        });
+        return { ...customer.toJSON(), purchases };
+      }));
+    }
 
-    const customerCount = customers.length;
+    const customerCount = filteredCustomers.length;
 
     const subDealers = await Dealers.findAll({
       where: { referenceBy: userId },
@@ -324,54 +350,74 @@ exports.get_dealer_details = async (req, res) => {
         as: "reference",
         model: Dealers,
         attributes: ["firstName", "dealerCommission", "subDealerCommission"]
-      },]
+      }]
     });
 
-    let subCustomers = [];
-
-    if (subDealers.length > 0) {
+    let filteredSubCustomers = [];
+    if (parsedStartDate && parsedEndDate) {
       for (const subDealer of subDealers) {
-        const subWhereConditions = { addedBy: subDealer.id };
-        if (parsedStartDate && parsedEndDate) {
-          subWhereConditions.agreementDate = {
-            [Sequelize.Op.between]: [parsedStartDate, parsedEndDate]
-          };
-        }
-
-        const customersForSubDealer = await Customers.findAll({
-          where: subWhereConditions,
+        const subCustomers = await Customers.findAll({
+          where: { addedBy: subDealer.id },
           include: [{
-            model: Dealers,
-          },{
-            model:Purchases
+            model: Dealers
           }]
         });
-        subCustomers = subCustomers.concat(customersForSubDealer);
+
+        const subFilteredCustomers = await Promise.all(subCustomers.map(async (subCustomer) => {
+          const purchases = await Purchases.findAll({
+            where: {
+              customerId: subCustomer.id,
+              purchaseDate: {
+                [Sequelize.Op.between]: [parsedStartDate, parsedEndDate]
+              }
+            }
+          });
+          return { ...subCustomer.toJSON(), purchases };
+        }));
+
+        filteredSubCustomers = filteredSubCustomers.concat(subFilteredCustomers);
+      }
+    } else {
+      for (const subDealer of subDealers) {
+        const subCustomers = await Customers.findAll({
+          where: { addedBy: subDealer.id },
+          include: [{
+            model: Dealers
+          }]
+        });
+
+        const subCustomersWithPurchases = await Promise.all(subCustomers.map(async (subCustomer) => {
+          const purchases = await Purchases.findAll({
+            where: { customerId: subCustomer.id }
+          });
+          return { ...subCustomer.toJSON(), purchases };
+        }));
+
+        filteredSubCustomers = filteredSubCustomers.concat(subCustomersWithPurchases);
       }
     }
 
-    const totalCommission = customers.reduce((total, customer) => {
+    const totalCommission = filteredCustomers.reduce((total, customer) => {
       const customerTotal = customer.purchases.reduce((sum, purchase) => {
         return sum + (purchase.price * customer.dealer.dealerCommission);
       }, 0);
       return total + customerTotal;
     }, 0);
-    
-    const totalSubCommission = subCustomers.reduce((total, subCustomer) => {
+
+    const totalSubCommission = filteredSubCustomers.reduce((total, subCustomer) => {
       const subCustomerTotal = subCustomer.purchases.reduce((sum, purchase) => {
         return sum + (purchase.price * subCustomer.dealer.subDealerCommission);
       }, 0);
       return total + subCustomerTotal;
     }, 0);
-    
+
     const totalEarn = parseFloat(totalCommission) + parseFloat(totalSubCommission);
     res.render("admin/userDetails", {
       title: `${dealers.firstName} || Bayi Detay`,
-      customers: customers,
+      customers: filteredCustomers,
       customerCount: customerCount,
-      subCustomers: subCustomers,
+      subCustomers: filteredSubCustomers,
       dealers: dealers,
-      subDealerCommission: dealers.subDealerCommission,
       totalSubCommission: totalSubCommission.toFixed(2),
       totalCommission: totalCommission.toFixed(2),
       totalEarn: totalEarn.toFixed(2)
