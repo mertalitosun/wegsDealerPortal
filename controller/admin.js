@@ -399,17 +399,18 @@ exports.get_dealer_details = async (req, res) => {
 
     const totalCommission = filteredCustomers.reduce((total, customer) => {
       const customerTotal = customer.purchases.reduce((sum, purchase) => {
-        return sum + (purchase.price * customer.dealer.dealerCommission);
+        return sum + (purchase.price * dealers.dealerCommission);
       }, 0);
       return total + customerTotal;
     }, 0);
-
+   
     const totalSubCommission = filteredSubCustomers.reduce((total, subCustomer) => {
       const subCustomerTotal = subCustomer.purchases.reduce((sum, purchase) => {
-        return sum + (purchase.price * subCustomer.dealer.subDealerCommission);
+        return sum + (purchase.price * dealers.subDealerCommission);
       }, 0);
       return total + subCustomerTotal;
     }, 0);
+    console.log(dealers.subDealerCommission)
 
     const totalEarn = parseFloat(totalCommission) + parseFloat(totalSubCommission);
     res.render("admin/userDetails", {
@@ -422,7 +423,6 @@ exports.get_dealer_details = async (req, res) => {
       totalCommission: totalCommission.toFixed(2),
       totalEarn: totalEarn.toFixed(2)
     });
-
   } catch (err) {
     console.log(err);
     res.status(500).send("Internal Server Error");

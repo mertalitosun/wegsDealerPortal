@@ -37,7 +37,7 @@
                         ₺<%= purchase.price %>
                     </td>
                     <td>
-                        ₺<%=  (purchase.price  * customer.dealer.dealerCommission).toFixed(2)%>
+                        ₺<%=  (purchase.price  * dealers.dealerCommission).toFixed(2)%>
                     </td>
                     <td>
                         <a href="/admin/customer/edit/<%= customer.id %>" class="edit"><i class="bi bi-pencil-square"></i></a>
