@@ -114,7 +114,7 @@ exports.post_customer_create = async (req, res) => {
     const purchase = await Purchases.create({
       productName:productName,
       price:price,
-      purchaseDate:agreementDate,
+      purchaseDate:purchaseDate,
       customerId:customer.id
     })
   }catch(err){
