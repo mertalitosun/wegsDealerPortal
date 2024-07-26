@@ -12,12 +12,16 @@ const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const Users = require("./models/users");
 const Customers = require("./models/customers");
 const Dealers = require("./models/dealers");
+const Purchases = require("./models/purchases");
 
 Dealers.belongsTo(Dealers, { as: 'reference', foreignKey: 'referenceBy', targetKey: 'id' });
 //müşteri - bayi
 Customers.belongsTo(Dealers, { foreignKey: 'addedBy'});
 Dealers.hasMany(Customers, { foreignKey: 'addedBy'});
 
+//müşteri - satın alım
+Customers.hasMany(Purchases, { foreignKey: 'customerId' });
+Purchases.belongsTo(Customers, { foreignKey: 'customerId' });
 
 
 

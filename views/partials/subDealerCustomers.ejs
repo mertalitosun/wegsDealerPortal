@@ -12,27 +12,29 @@
     </thead>
     <tbody>
             <% subCustomers.forEach(subCustomer => { %>
-            <tr >
-                <td>
-                    <%= subCustomer.firstName %>
-                </td>
-                <td>
-                    <%= subCustomer.lastName %>
-                </td>
-                <td>
-                    <%= subCustomer.organization %>
-                </td>
-                <td>
-                    <% const createdAt = new Date(subCustomer.agreementDate); %>
-                    <%= createdAt.getDate().toString().padStart(2, '0') %>/<%= (createdAt.getMonth() + 1).toString().padStart(2, '0') %>/<%= createdAt.getFullYear() %>
-                </td>
-                <td>
-                    ₺<%= subCustomer.price %>
-                </td>
-                <td>
-                    ₺<%=  (subCustomer.price * subDealerCommission).toFixed(2)%>
-                </td>
-            </tr>
+                <% subCustomer.purchases.forEach(purchase => { %>
+                    <tr >
+                        <td>
+                            <%= subCustomer.firstName %>
+                        </td>
+                        <td>
+                            <%= subCustomer.lastName %>
+                        </td>
+                        <td>
+                            <%= subCustomer.organization %>
+                        </td>
+                        <td>
+                            <% const createdAt = new Date(purchase.purchaseDate); %>
+                            <%= createdAt.getDate().toString().padStart(2, '0') %>/<%= (createdAt.getMonth() + 1).toString().padStart(2, '0') %>/<%= createdAt.getFullYear() %>
+                        </td>
+                        <td>
+                            ₺<%= purchase.price %>
+                        </td>
+                        <td>
+                            ₺<%=  (purchase.price * subDealerCommission).toFixed(2)%>
+                        </td>
+                    </tr>
+                <% }) %>
             <% }) %>
         </tbody>
 </table>

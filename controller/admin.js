@@ -1,6 +1,7 @@
 const Users = require("../models/users");
 const Customers = require("../models/customers");
 const Dealers = require("../models/dealers");
+const Purchases = require("../models/purchases");
 const Sequelize = require("sequelize");
 
 
@@ -295,6 +296,7 @@ exports.get_dealer_details = async (req, res) => {
       }]
     });
 
+    
     const whereConditions = { addedBy: userId };
     if (parsedStartDate && parsedEndDate) {
       whereConditions.agreementDate = {
@@ -303,12 +305,16 @@ exports.get_dealer_details = async (req, res) => {
     }
 
     const customers = await Customers.findAll({
-      where: whereConditions,
+      where: {addedBy:userId},
       include: [{
         model: Dealers,
         attributes: ["firstName", "dealerCommission", "subDealerCommission"]
+      },{
+        model:Purchases,
       }]
     });
+
+    
 
     const customerCount = customers.length;
 
@@ -318,7 +324,7 @@ exports.get_dealer_details = async (req, res) => {
         as: "reference",
         model: Dealers,
         attributes: ["firstName", "dealerCommission", "subDealerCommission"]
-      }]
+      },]
     });
 
     let subCustomers = [];
@@ -336,6 +342,8 @@ exports.get_dealer_details = async (req, res) => {
           where: subWhereConditions,
           include: [{
             model: Dealers,
+          },{
+            model:Purchases
           }]
         });
         subCustomers = subCustomers.concat(customersForSubDealer);
@@ -343,13 +351,19 @@ exports.get_dealer_details = async (req, res) => {
     }
 
     const totalCommission = customers.reduce((total, customer) => {
-      return total + (customer.price * dealers.dealerCommission);
+      const customerTotal = customer.purchases.reduce((sum, purchase) => {
+        return sum + (purchase.price * customer.dealer.dealerCommission);
+      }, 0);
+      return total + customerTotal;
     }, 0);
-
+    
     const totalSubCommission = subCustomers.reduce((total, subCustomer) => {
-      return total + (subCustomer.price * dealers.subDealerCommission);
+      const subCustomerTotal = subCustomer.purchases.reduce((sum, purchase) => {
+        return sum + (purchase.price * subCustomer.dealer.subDealerCommission);
+      }, 0);
+      return total + subCustomerTotal;
     }, 0);
-
+    
     const totalEarn = parseFloat(totalCommission) + parseFloat(totalSubCommission);
     res.render("admin/userDetails", {
       title: `${dealers.firstName} || Bayi Detay`,

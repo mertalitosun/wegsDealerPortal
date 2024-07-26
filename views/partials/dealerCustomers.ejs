@@ -18,30 +18,32 @@
         <% }) %>
 
         <% customers.forEach(customer => { %>
-            <tr>
-                <td>
-                    <%= customer.firstName %>
-                </td>
-                <td>
-                    <%= customer.lastName %>
-                </td>
-                <td>
-                    <%= customer.organization %>
-                </td>
-                <td>
-                    <% const createdAt = new Date(customer.agreementDate); %>
-                    <%= createdAt.getDate().toString().padStart(2, '0') %>/<%= (createdAt.getMonth() + 1).toString().padStart(2, '0') %>/<%= createdAt.getFullYear() %>
-                </td>
-                <td>
-                    ₺<%= customer.price %>
-                </td>
-                <td>
-                    ₺<%=  (customer.price  * customer.dealer.dealerCommission).toFixed(2)%>
-                </td>
-                <td>
-                    <a href="/admin/customer/edit/<%= customer.id %>" class="edit"><i class="bi bi-pencil-square"></i></a>
-                </td>
-            </tr>
+            <% customer.purchases.forEach(purchase => { %>
+                <tr>
+                    <td>
+                        <%= customer.firstName %>
+                    </td>
+                    <td>
+                        <%= customer.lastName %>
+                    </td>
+                    <td>
+                        <%= customer.organization %>
+                    </td>
+                    <td>
+                        <% const createdAt = new Date(purchase.purchaseDate); %>
+                        <%= createdAt.getDate().toString().padStart(2, '0') %>/<%= (createdAt.getMonth() + 1).toString().padStart(2, '0') %>/<%= createdAt.getFullYear() %>
+                    </td>
+                    <td>
+                        ₺<%= purchase.price %>
+                    </td>
+                    <td>
+                        ₺<%=  (purchase.price  * customer.dealer.dealerCommission).toFixed(2)%>
+                    </td>
+                    <td>
+                        <a href="/admin/customer/edit/<%= customer.id %>" class="edit"><i class="bi bi-pencil-square"></i></a>
+                    </td>
+                </tr>
+            <% }) %>
         <% }) %>
     </tbody>
 </table>
