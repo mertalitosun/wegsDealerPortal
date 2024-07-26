@@ -23,6 +23,7 @@ Dealers.hasMany(Customers, { foreignKey: 'addedBy'});
 
 
 
+
 app.set("view engine", "ejs");
 app.use(express.static("node_modules"));
 app.use("/static", express.static(path.join(__dirname, "public")));

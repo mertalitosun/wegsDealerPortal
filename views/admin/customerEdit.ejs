@@ -32,7 +32,8 @@
                 <label for="price" class="form-label">Fiyat</label>
                 <input type="number" id="price" name="price" placeholder="₺500" class="form-control" required value="<%= customer.price %>">
             </div>
-            <button type="submit" class="btn btn-primary w-100">Kaydet</button>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="/admin/dealer/details/<%= customer.dealer.id %>" class="btn btn-warning">Vazgeç</a>
         </form>
     </div>
 </body>

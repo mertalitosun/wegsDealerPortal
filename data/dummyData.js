@@ -2,6 +2,7 @@ const Users = require("../models/users");
 const Customers = require("../models/customers");
 const Dealers = require("../models/dealers");
 const bcrypt = require("bcrypt");
+const shortid = require("shortid");
 
 const dummyData = async () => {
     const usersCount = await Users.count();
@@ -13,9 +14,9 @@ const dummyData = async () => {
     if (dealersCount == 0) {
         await Dealers.bulkCreate(
         [
-            {firstName: "mehmet", lastName: "namal", email: "mehmet@mail.com",dealerCommission:0.10,subDealerCommission:0.05},
-            {firstName: "ahmet", lastName: "namal", email: "ahmet@mail.com",referenceBy:1,dealerCommission:0.10,subDealerCommission:0.05},
-            {firstName: "şefik", lastName: "merpez", email: "sefik@mail.com",referenceBy:2,dealerCommission:0.10,subDealerCommission:0.05},
+            {firstName: "mehmet", lastName: "namal", email: "mehmet@mail.com",dealerCommission:0.10,subDealerCommission:0.05,referenceCode : shortid.generate()},
+            {firstName: "ahmet", lastName: "namal", email: "ahmet@mail.com",referenceBy:1,dealerCommission:0.10,subDealerCommission:0.05,referenceCode : shortid.generate()},
+            {firstName: "şefik", lastName: "merpez", email: "sefik@mail.com",referenceBy:2,dealerCommission:0.10,subDealerCommission:0.05,referenceCode : shortid.generate()},
         ]);
     }
     const customerCount = await Customers.count();

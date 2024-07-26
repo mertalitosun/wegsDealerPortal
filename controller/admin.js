@@ -50,7 +50,10 @@ exports.post_customer_edit = async (req, res) => {
 exports.get_customer_edit = async(req,res)=>{
   const id = req.params.id;
   try{
-    const customer = await Customers.findOne({where:{id}});
+    const customer = await Customers.findOne({where:{id},include:[{
+      model:Dealers,
+      attributes:["id"]
+    }]});
 
     res.render("admin/customerEdit",{
       title: "Müşteri Düzenle",
@@ -79,10 +82,9 @@ exports.post_customer_create = async (req, res) => {
   if (!agreementDate) {
     errors.push({ msg: "Tarih boş bırakılamaz" });
   }
+  const dealer = await Dealers.findByPk(id);
 
   if (errors.length > 0) {
-    
-    const dealer = await Dealers.findByPk(id);
     return res.status(400).render(`admin/customerCreate`, {
       title: 'Müşteri Kayıt Formu',
       errors: errors,
@@ -98,7 +100,9 @@ exports.post_customer_create = async (req, res) => {
       price:price,
       agreementDate:agreementDate,
       addedBy: id,
-    })
+    });
+    dealer.status = true;
+    dealer.save();
   }catch(err){
     console.log(err)
   }
@@ -287,7 +291,7 @@ exports.get_dealer_details = async (req, res) => {
   const parsedEndDate = endDate ? new Date(endDate) : null;
 
   try {
-    const dealers = await Dealers.findByPk(userId, {
+    const dealers = await Dealers.findOne({where:{id:userId},
       include: [{
         as: "reference",
         model: Dealers,
@@ -341,7 +345,6 @@ exports.get_dealer_details = async (req, res) => {
         subCustomers = subCustomers.concat(customersForSubDealer);
       }
     }
-
     const totalCommission = customers.reduce((total, customer) => {
       return total + (customer.price * dealers.dealerCommission);
     }, 0);

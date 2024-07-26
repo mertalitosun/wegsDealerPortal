@@ -27,7 +27,7 @@ const Dealers = sequelize.define("dealers",{
     },
     status:{
         type:DataTypes.BOOLEAN,
-        defaultValue:true,
+        defaultValue:false,
         allowNull:false
     }
 })
