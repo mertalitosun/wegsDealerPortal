@@ -18,7 +18,7 @@ table th, table td{
 a{
     text-decoration: none;
 }
-.customerAdd{
+.customerAdd, .addOrder{
     font-size: 20px;
     color: #06D001;
 }

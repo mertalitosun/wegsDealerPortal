@@ -4,7 +4,45 @@ const Dealers = require("../models/dealers");
 const Purchases = require("../models/purchases");
 const Sequelize = require("sequelize");
 
+const firstLetter = (data) =>{
+  return data.charAt(0).toUpperCase() + data.slice(1);
+}
+exports.post_add_order = async(req,res)=>{
+  const id = req.params.id;
+  const{productName,price,purchaseDate} = req.body;
 
+  try{
+    const customer = await Customers.findByPk(id,{include:[{
+      model:Dealers,
+      attributes:["id"]
+    }]})
+    const purchase = await Purchases.create({
+      productName:firstLetter(productName),
+      price:price,
+      purchaseDate:purchaseDate,
+      customerId:customer.id
+    })
+    res.redirect(`/admin/dealer/details/${customer.dealer.id}`);
+  }catch(err){
+    console.log(err)
+  }
+}
+
+exports.get_add_order = async(req,res)=>{
+  const id = req.params.id;
+  try{
+    const customer = await Customers.findByPk(id,{include:[{
+      model:Dealers,
+      attributes:["id"]
+    }]});
+    res.render("admin/addOrder",{
+      title: `${customer.firstName}|| Sipariş Ekle`,
+      customer:customer
+    })
+  }catch(err){
+    console.log(err)
+  }
+}
 //müşteri
 exports.post_customer_edit = async (req, res) => {
   const id = req.params.id;
@@ -39,13 +77,13 @@ exports.post_customer_edit = async (req, res) => {
   }
   try{
     const customer = await Customers.findOne({where:{id}});
-    customer.firstName = firstName;
-    customer.lastName = lastName;
-    customer.organization = organization;
+    customer.firstName = firstLetter(firstName);
+    customer.lastName = firstLetter(lastName);
+    customer.organization = firstLetter(organization);
     const purchase = await Purchases.findOne({where:{customerId:id}});
     purchase.price = price,
     purchase.purchaseDate = purchaseDate,
-    purchase.productName = productName,
+    purchase.productName = firstLetter(productName),
     await customer.save();
     await purchase.save();
     const dealerId = customer.addedBy
@@ -106,9 +144,9 @@ exports.post_customer_create = async (req, res) => {
   }
   try{
     const customer = await Customers.create({
-      firstName:firstName,
-      lastName:lastName,
-      organization:organization,
+      firstName:firstLetter(firstName),
+      lastName:firstLetter(lastName),
+      organization:firstLetter(organization),
       addedBy: id,
     })
     const purchase = await Purchases.create({
@@ -164,8 +202,8 @@ exports.post_dealer_edit = async (req, res) => {
   }
   try{
     const dealers = await Dealers.findOne({where:{id}});
-    dealers.firstName = firstName;
-    dealers.lastName = lastName;
+    dealers.firstName = firstLetter(firstName);
+    dealers.lastName = firstLetter(lastName);
     dealers.dealerCommission = (parseFloat(dealerCommission) / 100).toFixed(2);
     dealers.subDealerCommission = (parseFloat(subDealerCommission) / 100).toFixed(2);
     dealers.status = status;
@@ -238,8 +276,8 @@ exports.post_admin_dealer_create = async(req,res) =>{
   }
   try{
     const dealers = await Dealers.create({
-      firstName:firstName,
-      lastName:lastName,
+      firstName:firstLetter(firstName),
+      lastName:firstLetter(lastName),
       dealerCommission: (parseFloat(dealerCommission) / 100).toFixed(2),
       subDealerCommission: (parseFloat(subDealerCommission) / 100).toFixed(2),
     });
@@ -277,8 +315,8 @@ exports.post_dealer_create = async(req,res) =>{
   }
   try{
     const dealers = await Dealers.create({
-      firstName:firstName,
-      lastName:lastName,
+      firstName:firstLetter(firstName),
+      lastName:firstLetter(lastName),
       dealerCommission: (parseFloat(dealerCommission) / 100).toFixed(2),
       subDealerCommission: (parseFloat(subDealerCommission) / 100).toFixed(2),
       referenceBy:id
@@ -461,7 +499,7 @@ exports.get_profile = async (req, res) => {
   try{
     const user = await Users.findByPk(userId);
     res.render("admin/profile", {
-      title: user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1),
+      title: firstLetter(user.firstName),
       user:user
     });
   }catch(err){

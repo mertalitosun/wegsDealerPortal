@@ -3,7 +3,8 @@ const router = express.Router();
 const adminController = require("../controller/admin");
 const isAuth = require("../middlewares/auth");
 
-
+router.post("/admin/customer/addOrder/:id",isAuth,adminController.post_add_order);
+router.get("/admin/customer/addOrder/:id",isAuth,adminController.get_add_order);
 //Müşteri
 router.post("/admin/customer/edit/:id",isAuth,adminController.post_customer_edit);
 router.get("/admin/customer/edit/:id",isAuth,adminController.get_customer_edit);

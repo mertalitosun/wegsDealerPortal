@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head') %>
+<body>
+    <%- include('../partials/nav') %>
+    <div class="container mt-5 ">
+        <h4 class="text-center">Sipariş Ekle</h4>
+        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+            <div class="alert alert-danger">
+                <% errors.forEach(function(error) { %>
+                    <p><%= error.msg %></p>
+                <% }); %>
+            </div>
+        <% } %>
+        <form method="post">
+            <div class="mb-3">
+                <label for="productName" class="form-label">Satılan Hizmet</label>
+                <input type="text" id="productName" name="productName" placeholder="Hizmet" class="form-control" required value="<%= typeof data !="undefined" ? data.productName : "" %>">
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Fiyat</label>
+                <input type="number" id="price" name="price" placeholder="₺500" class="form-control" required value="<%= typeof data !="undefined" ? data.price : "" %>">
+            </div>
+            <div class="mb-3">
+                <label for="purchaseDate" class="form-label">Sözleşme Tarihi</label>
+                <input type="date" id="purchaseDate" name="purchaseDate" class="form-control" required value="<%= typeof data !="undefined" ? data.purchaseDate : "" %>">
+            </div>
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="/admin/dealer/details/<%= customer.dealer.id %>" class="btn btn-warning">Vazgeç</a>
+        </form>
+    </div>
+    <script>
+        function getTodayDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const todayDate = getTodayDate();
+            document.getElementById("agreementDate").value = todayDate;
+        });
+    </script>
+</body>
+</html>
