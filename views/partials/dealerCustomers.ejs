@@ -48,11 +48,11 @@
                     </td>
                     <% if (isAdmin) { %>
                         <td>
-                            <a href="/admin/customer/edit/<%= customer.id %>/<%= purchase.id %>" class="edit"><i class="bi bi-pencil-square"></i></a>
+                            <a href="/admin/customer/edit/<%= customer.customerCode %>/<%= purchase.purchaseCode %>" class="edit"><i class="bi bi-pencil-square"></i></a>
                         </td>
     
                         <td>
-                            <a href="/admin/customer/addOrder/<%= customer.id %>" class="addOrder"><i class="bi bi-plus-circle-fill"></i></a>
+                            <a href="/admin/customer/addOrder/<%= customer.customerCode %>" class="addOrder"><i class="bi bi-plus-circle-fill"></i></a>
                         </td>
                     <% } %>
                 </tr>

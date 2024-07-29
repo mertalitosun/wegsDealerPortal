@@ -41,7 +41,7 @@
                 <input type="date" id="purchaseDate" name="purchaseDate" class="form-control" required value="<%= typeof data !="undefined" ? data.purchaseDate : "" %>">
             </div>
             <button type="submit" class="btn btn-primary">Kaydet</button>
-            <a href="/admin/dealer/details/<%= dealer.id %>" class="btn btn-warning">Vazgeç</a>
+            <a href="/admin/dealer/details/<%= dealer.dealerCode %>" class="btn btn-warning">Vazgeç</a>
         </form>
     </div>
     <script>

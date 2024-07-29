@@ -10,13 +10,13 @@ const firstLetter = (data) =>{
   return data.charAt(0).toUpperCase() + data.slice(1);
 }
 exports.post_add_order = async(req,res)=>{
-  const id = req.params.id;
+  const customerCode = req.params.customerCode;
   const{productName,price,purchaseDate} = req.body;
 
   try{
-    const customer = await Customers.findByPk(id,{include:[{
+    const customer = await Customers.findOne({where:{customerCode:customerCode},include:[{
       model:Dealers,
-      attributes:["id"]
+      attributes:["dealerCode"]
     }]})
     const purchase = await Purchases.create({
       purchaseCode : `PRC-${shortid.generate()}`,
@@ -25,16 +25,16 @@ exports.post_add_order = async(req,res)=>{
       purchaseDate:purchaseDate,
       customerId:customer.id
     })
-    res.redirect(`/admin/dealer/details/${customer.dealer.id}`);
+    res.redirect(`/admin/dealer/details/${customer.dealer.dealerCode}`);
   }catch(err){
     console.log(err)
   }
 }
 
 exports.get_add_order = async(req,res)=>{
-  const id = req.params.id;
+  const customerCode = req.params.customerCode;
   try{
-    const customer = await Customers.findByPk(id,{include:[{
+    const customer = await Customers.findOne({where:{customerCode:customerCode},include:[{
       model:Dealers,
       attributes:["id"]
     }]});
@@ -48,8 +48,8 @@ exports.get_add_order = async(req,res)=>{
 }
 //müşteri
 exports.post_customer_edit = async (req, res) => {
-  const id = req.params.id;
-  const purchaseId = req.params.purchaseId;
+  const customerCode = req.params.customerCode;
+  const purchaseCode = req.params.purchaseCode;
   const {firstName,lastName,organization,price,purchaseDate,productName} = req.body;
   const errors = [];
 
@@ -80,31 +80,31 @@ exports.post_customer_edit = async (req, res) => {
     });
   }
   try{
-    const customer = await Customers.findOne({where:{id}});
+    const customer = await Customers.findOne({where:{customerCode:customerCode}});
     customer.firstName = firstLetter(firstName);
     customer.lastName = firstLetter(lastName);
     customer.organization = firstLetter(organization);
-    const purchase = await Purchases.findOne({where:{id:purchaseId}});
+    const purchase = await Purchases.findOne({where:{purchaseCode:purchaseCode}});
     purchase.price = price,
     purchase.purchaseDate = purchaseDate,
     purchase.productName = firstLetter(productName),
     await customer.save();
     await purchase.save();
-    const dealerId = customer.addedBy;
-    res.redirect(`/admin/dealer/details/${dealerId}`);
+    const dealer = await Dealers.findOne({where:{id:customer.addedBy}})
+    res.redirect(`/admin/dealer/details/${dealer.dealerCode}`);
   }catch(err){
     console.log(err)
   }
 };
 exports.get_customer_edit = async(req,res)=>{
-  const id = req.params.id;
-  const purchaseId = req.params.purchaseId
+  const customerCode = req.params.customerCode;
+  const purchaseCode = req.params.purchaseCode
   try{
-    const customer = await Customers.findOne({where:{id},include:[{
+    const customer = await Customers.findOne({where:{customerCode:customerCode},include:[{
       model:Dealers,
       attributes:["id"]
     }]});
-    const purchase = await Purchases.findOne({where:{id:purchaseId}})
+    const purchase = await Purchases.findOne({where:{purchaseCode:purchaseCode}})
     res.render("admin/customerEdit",{
       title: "Müşteri Düzenle",
       customer:customer,
@@ -115,8 +115,9 @@ exports.get_customer_edit = async(req,res)=>{
   }
 }
 exports.post_customer_create = async (req, res) => {
-  const id = req.params.id
+  const dealerCode = req.params.dealerCode
   const {firstName,lastName,organization,price,purchaseDate,productName} = req.body;
+  const dealer = await Dealers.findOne({where:{dealerCode:dealerCode}});
   const errors = [];
   if (!firstName || firstName.trim() === '') {
     errors.push({ msg: 'Ad boş bırakılamaz' });
@@ -139,7 +140,7 @@ exports.post_customer_create = async (req, res) => {
 
   if (errors.length > 0) {
     
-    const dealer = await Dealers.findByPk(id);
+   
     return res.status(400).render(`admin/customerCreate`, {
       title: 'Müşteri Kayıt Formu',
       errors: errors,
@@ -153,7 +154,7 @@ exports.post_customer_create = async (req, res) => {
       firstName:firstLetter(firstName),
       lastName:firstLetter(lastName),
       organization:firstLetter(organization),
-      addedBy: id,
+      addedBy: dealer.id
     })
     const purchase = await Purchases.create({
       purchaseCode : `PRC-${shortid.generate()}`,
@@ -165,12 +166,12 @@ exports.post_customer_create = async (req, res) => {
   }catch(err){
     console.log(err)
   }
-  res.redirect(`/admin/dealer/details/${id}`);
+  res.redirect(`/admin/dealer/details/${dealerCode}`);
 };
 exports.get_customer_create = async (req, res) => {
-  const id = req.params.id;
+  const dealerCode = req.params.dealerCode;
   try{
-    const dealer = await Dealers.findByPk(id);
+    const dealer = await Dealers.findOne({where:{dealerCode:dealerCode}});
     res.render("admin/customerCreate", {
       title: "Müşteri Ekle",
       dealer:dealer
@@ -183,11 +184,10 @@ exports.get_customer_create = async (req, res) => {
 
 //Bayi
 exports.post_dealer_edit = async (req, res) => {
-  const id = req.params.id;
+  const dealerCode = req.params.dealerCode;
   const {firstName,lastName,dealerCommission,subDealerCommission,status,statusDescription} = req.body;
   let errors = [];
 
-  console.log("Durum<<<<<<>>>>>>>>>>>><",status)
   if (!firstName || firstName.trim() === '') {
     errors.push({ msg: 'Ad boş bırakılamaz' });
   }
@@ -209,7 +209,7 @@ exports.post_dealer_edit = async (req, res) => {
     });
   }
   try{
-    const dealers = await Dealers.findOne({where:{id}});
+    const dealers = await Dealers.findOne({where:{dealerCode:dealerCode}});
     dealers.firstName = firstLetter(firstName);
     dealers.lastName = firstLetter(lastName);
     dealers.dealerCommission = (parseFloat(dealerCommission) / 100).toFixed(2);
@@ -217,15 +217,15 @@ exports.post_dealer_edit = async (req, res) => {
     dealers.status = status;
     dealers.statusDescription = status == "true" ? null : statusDescription;
     await dealers.save();
-    res.redirect(`/admin/dealer/details/${id}`);
+    res.redirect(`/admin/dealer/details/${dealerCode}`);
   }catch(err){
     console.log(err)
   }
 };
 exports.get_dealer_edit = async (req, res) => {
-  const id = req.params.id;
+  const dealerCode = req.params.dealerCode;
   try{
-    const dealers = await Dealers.findOne({where:{id}});
+    const dealers = await Dealers.findOne({where:{dealerCode:dealerCode}});
 
     res.render("admin/dealerEdit",{
       title: "Bayi Düzenle",
@@ -299,8 +299,9 @@ exports.post_admin_dealer_create = async(req,res) =>{
 
 //Bayi Kayıt - Dealer
 exports.post_dealer_create = async(req,res) =>{
-  const id = req.params.id;
+  const dealerCode = req.params.dealerCode;
   const {firstName,lastName,dealerCommission,subDealerCommission} = req.body;
+  const dealer = await Dealers.findOne({where:{dealerCode:dealerCode}})
   let errors = [];
 
   if (!firstName || firstName.trim() === '') {
@@ -330,7 +331,7 @@ exports.post_dealer_create = async(req,res) =>{
       lastName:firstLetter(lastName),
       dealerCommission: (parseFloat(dealerCommission) / 100).toFixed(2),
       subDealerCommission: (parseFloat(subDealerCommission) / 100).toFixed(2),
-      referenceBy:id
+      referenceBy:dealer.id
     });
     res.redirect("/admin/dealers");
   }catch(err){
@@ -346,23 +347,24 @@ exports.get_dealer_create = async(req,res) =>{
 
 
 exports.get_dealer_details = async (req, res) => {
-  const userId = req.params.id;
+  const dealerCode = req.params.dealerCode;
   const { startDate, endDate } = req.query;
 
   const parsedStartDate = startDate ? new Date(startDate) : null;
   const parsedEndDate = endDate ? new Date(endDate) : null;
 
   try {
-    const dealers = await Dealers.findByPk(userId, {
+    const dealers = await Dealers.findOne({
+      where: { dealerCode: dealerCode },
       include: [{
-        as: "reference",
+        as: "reference", 
         model: Dealers,
         attributes: ["firstName"]
       }]
     });
 
     const customers = await Customers.findAll({
-      where: { addedBy: userId },
+      where: { addedBy: dealers.id },
       include: [{
         model: Dealers,
         attributes: ["firstName", "dealerCommission", "subDealerCommission"]
@@ -394,7 +396,7 @@ exports.get_dealer_details = async (req, res) => {
     const customerCount = filteredCustomers.length;
 
     const subDealers = await Dealers.findAll({
-      where: { referenceBy: userId },
+      where: { referenceBy: dealers.id },
       include: [{
         as: "reference",
         model: Dealers,
