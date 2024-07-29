@@ -9,8 +9,10 @@
             <th>Hizmet</th>
             <th>Paket Fiyatları</th>
             <th>Hakediş</th>
-            <th>Düzenle</th>
-            <th>Sipariş Ekle</th>
+            <% if (isAdmin) { %>
+                <th>Düzenle</th>
+                <th>Sipariş Ekle</th>
+            <% } %>
         </tr>
     </thead>
     <tbody>
@@ -44,12 +46,15 @@
                     <td>
                         ₺<%=  (purchase.price  * dealers.dealerCommission).toFixed(2)%>
                     </td>
-                    <td>
-                        <a href="/admin/customer/edit/<%= customer.id %>" class="edit"><i class="bi bi-pencil-square"></i></a>
-                    </td>
-                    <td>
-                        <a href="/admin/customer/addOrder/<%= customer.id %>" class="addOrder"><i class="bi bi-plus-circle-fill"></i></a>
-                    </td>
+                    <% if (isAdmin) { %>
+                        <td>
+                            <a href="/admin/customer/edit/<%= customer.id %>/<%= purchase.id %>" class="edit"><i class="bi bi-pencil-square"></i></a>
+                        </td>
+    
+                        <td>
+                            <a href="/admin/customer/addOrder/<%= customer.id %>" class="addOrder"><i class="bi bi-plus-circle-fill"></i></a>
+                        </td>
+                    <% } %>
                 </tr>
             <% }) %>
         <% }) %>

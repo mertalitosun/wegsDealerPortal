@@ -11,13 +11,17 @@
                         <th>Durum</th>
                         <th>Ad</th>
                         <th>Soyad</th>
-                        <th><a href="/admin/dealer/create/<%= userId %>" class="dealerAdd"><i class="bi bi-shop"></i> Bayi Ekle</a></th>
+                        <% if (isAdmin) { %>
+                            <th><a href="/admin/dealer/create/<%= userId %>" class="dealerAdd"><i class="bi bi-shop"></i> Bayi Ekle</a></th>
+                        <% } else {%> 
+                            <th></th>
+                        <% } %> 
                     </tr>
                 </thead>
                 <tbody>
                     <% dealers.forEach(dealer => { %>
                         <tr>
-                            <td>
+                            <td >
                                 <span class="status <%= dealer.status ? "active-status" : "inActive-status" %>"><%= dealer.status ? "Aktif" : "Pasif" %></span>
                             </td>
                             <td>
@@ -54,7 +58,6 @@
                 </ul>
             </nav>
         </div>
-       
     </div>
     <%- include('../partials/script') %>
 </body>

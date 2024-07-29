@@ -5,6 +5,7 @@
             <th>Ad</th>
             <th>Soyad</th>
             <th>Şirket</th>
+            <th>Kayıt Yapan Bayi</th>
             <th>Sözleşme Tarihi</th>
             <th>Paket Fiyatları</th>
             <th>Hakediş</th>
@@ -22,6 +23,9 @@
                         </td>
                         <td>
                             <%= subCustomer.organization %>
+                        </td>
+                        <td>
+                            <a href="/admin/dealer/details/<%= subCustomer.dealer.id %>"><%= subCustomer.dealer.firstName %></a>
                         </td>
                         <td>
                             <% const createdAt = new Date(purchase.purchaseDate); %>

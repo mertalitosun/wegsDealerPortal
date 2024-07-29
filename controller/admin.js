@@ -3,6 +3,8 @@ const Customers = require("../models/customers");
 const Dealers = require("../models/dealers");
 const Purchases = require("../models/purchases");
 const Sequelize = require("sequelize");
+const shortid = require("shortid");
+
 
 const firstLetter = (data) =>{
   return data.charAt(0).toUpperCase() + data.slice(1);
@@ -17,6 +19,7 @@ exports.post_add_order = async(req,res)=>{
       attributes:["id"]
     }]})
     const purchase = await Purchases.create({
+      purchaseCode : `PRC-${shortid.generate()}`,
       productName:firstLetter(productName),
       price:price,
       purchaseDate:purchaseDate,
@@ -46,6 +49,7 @@ exports.get_add_order = async(req,res)=>{
 //müşteri
 exports.post_customer_edit = async (req, res) => {
   const id = req.params.id;
+  const purchaseId = req.params.purchaseId;
   const {firstName,lastName,organization,price,purchaseDate,productName} = req.body;
   const errors = [];
 
@@ -80,13 +84,13 @@ exports.post_customer_edit = async (req, res) => {
     customer.firstName = firstLetter(firstName);
     customer.lastName = firstLetter(lastName);
     customer.organization = firstLetter(organization);
-    const purchase = await Purchases.findOne({where:{customerId:id}});
+    const purchase = await Purchases.findOne({where:{id:purchaseId}});
     purchase.price = price,
     purchase.purchaseDate = purchaseDate,
     purchase.productName = firstLetter(productName),
     await customer.save();
     await purchase.save();
-    const dealerId = customer.addedBy
+    const dealerId = customer.addedBy;
     res.redirect(`/admin/dealer/details/${dealerId}`);
   }catch(err){
     console.log(err)
@@ -94,12 +98,13 @@ exports.post_customer_edit = async (req, res) => {
 };
 exports.get_customer_edit = async(req,res)=>{
   const id = req.params.id;
+  const purchaseId = req.params.purchaseId
   try{
     const customer = await Customers.findOne({where:{id},include:[{
       model:Dealers,
       attributes:["id"]
     }]});
-    const purchase = await Purchases.findOne({where:{customerId:id}})
+    const purchase = await Purchases.findOne({where:{id:purchaseId}})
     res.render("admin/customerEdit",{
       title: "Müşteri Düzenle",
       customer:customer,
@@ -144,12 +149,14 @@ exports.post_customer_create = async (req, res) => {
   }
   try{
     const customer = await Customers.create({
+      customerCode : `CSR-${shortid.generate()}`,
       firstName:firstLetter(firstName),
       lastName:firstLetter(lastName),
       organization:firstLetter(organization),
       addedBy: id,
     })
     const purchase = await Purchases.create({
+      purchaseCode : `PRC-${shortid.generate()}`,
       productName:productName,
       price:price,
       purchaseDate:purchaseDate,
@@ -177,9 +184,10 @@ exports.get_customer_create = async (req, res) => {
 //Bayi
 exports.post_dealer_edit = async (req, res) => {
   const id = req.params.id;
-  const {firstName,lastName,dealerCommission,subDealerCommission,status} = req.body;
+  const {firstName,lastName,dealerCommission,subDealerCommission,status,statusDescription} = req.body;
   let errors = [];
 
+  console.log("Durum<<<<<<>>>>>>>>>>>><",status)
   if (!firstName || firstName.trim() === '') {
     errors.push({ msg: 'Ad boş bırakılamaz' });
   }
@@ -194,7 +202,7 @@ exports.post_dealer_edit = async (req, res) => {
   }
 
   if (errors.length > 0) {
-    return res.status(400).render('admin/dealerCreate', {
+    return res.status(400).render('admin/dealerEdit', {
       title: 'Bayi Kayıt Formu',
       errors: errors,
       data: { firstName, lastName, dealerCommission, subDealerCommission, status }
@@ -207,6 +215,7 @@ exports.post_dealer_edit = async (req, res) => {
     dealers.dealerCommission = (parseFloat(dealerCommission) / 100).toFixed(2);
     dealers.subDealerCommission = (parseFloat(subDealerCommission) / 100).toFixed(2);
     dealers.status = status;
+    dealers.statusDescription = status == "true" ? null : statusDescription;
     await dealers.save();
     res.redirect(`/admin/dealer/details/${id}`);
   }catch(err){
@@ -276,6 +285,7 @@ exports.post_admin_dealer_create = async(req,res) =>{
   }
   try{
     const dealers = await Dealers.create({
+      dealerCode : `DLR-${shortid.generate()}`,
       firstName:firstLetter(firstName),
       lastName:firstLetter(lastName),
       dealerCommission: (parseFloat(dealerCommission) / 100).toFixed(2),
@@ -315,6 +325,7 @@ exports.post_dealer_create = async(req,res) =>{
   }
   try{
     const dealers = await Dealers.create({
+      dealerCode : `DLR-${shortid.generate()}`,
       firstName:firstLetter(firstName),
       lastName:firstLetter(lastName),
       dealerCommission: (parseFloat(dealerCommission) / 100).toFixed(2),
@@ -448,7 +459,6 @@ exports.get_dealer_details = async (req, res) => {
       }, 0);
       return total + subCustomerTotal;
     }, 0);
-    console.log(dealers.subDealerCommission)
 
     const totalEarn = parseFloat(totalCommission) + parseFloat(totalSubCommission);
     res.render("admin/userDetails", {

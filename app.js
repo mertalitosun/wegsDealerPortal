@@ -13,6 +13,11 @@ const Users = require("./models/users");
 const Customers = require("./models/customers");
 const Dealers = require("./models/dealers");
 const Purchases = require("./models/purchases");
+const Roles = require("./models/roles");
+
+Users.belongsToMany(Roles, { through: 'userRoles' ,timestamps:false});
+Roles.belongsToMany(Users, { through: 'userRoles' ,timestamps:false});
+
 
 Dealers.belongsTo(Dealers, { as: 'reference', foreignKey: 'referenceBy', targetKey: 'id' });
 //müşteri - bayi

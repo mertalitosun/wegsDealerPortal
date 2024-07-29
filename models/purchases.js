@@ -7,6 +7,10 @@ const Purchases = sequelize.define("purchases", {
         autoIncrement: true,
         primaryKey: true
     },
+    purchaseCode:{
+        type:DataTypes.STRING,
+        allowNull:false
+    },
     productName: {
         type: DataTypes.STRING,
         allowNull: false

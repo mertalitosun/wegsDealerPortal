@@ -7,6 +7,10 @@ const Dealers = sequelize.define("dealers",{
         autoIncrement: true,
         primaryKey:true
     },
+    dealerCode:{
+        type:DataTypes.STRING,
+        allowNull:false
+    },
     firstName:{
         type:DataTypes.STRING,
         allowNull:false
@@ -29,6 +33,10 @@ const Dealers = sequelize.define("dealers",{
         type:DataTypes.BOOLEAN,
         defaultValue:true,
         allowNull:false
+    },
+    statusDescription:{
+        type:DataTypes.STRING,
+        allowNull: true
     }
 })
 

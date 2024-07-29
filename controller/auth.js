@@ -1,4 +1,5 @@
 const Users = require("../models/users");
+const Roles = require("../models/roles");
 const bcrypt = require("bcrypt");
 
 exports.get_register = async (req, res) => {
@@ -28,12 +29,25 @@ exports.post_register = async (req, res) => {
             });
         }
 
+        const userCount = await Users.count();
+        let role;
+
+        if (userCount == 0) {
+            role = await Roles.findOne({ where: { roleName: 'admin' } });
+        } else {
+            role = await Roles.findOne({ where: { roleName: 'moderator' } });
+        }
+
+
         const user = await Users.create({
             firstName: firstName,
             lastName: lastName,
             email: email,
             password: hashedPassword,
         });
+
+        await user.addRole(role);
+        
 
         return res.redirect("/login");
     } catch (err) {
@@ -58,6 +72,8 @@ exports.post_login = async (req, res) => {
         const user = await Users.findOne({
             where: {
                 email: email
+            },include:{
+                model:Roles
             }
         });
         if (!user) {
@@ -70,7 +86,16 @@ exports.post_login = async (req, res) => {
         if (match) {
             req.session.isAuth = true;
             req.session.userId = user.id;
-            req.session.fullName = user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1) + " " + user.lastName.charAt(0).toUpperCase()+ user.lastName.slice(1)
+            req.session.fullName = user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1) + " " + user.lastName.charAt(0).toUpperCase()+ user.lastName.slice(1);
+            req.session.roles = user.roles.map(role=>role.roleName);
+            if(req.session.roles.includes("Admin")){
+                req.session.isAdmin = true;
+                req.session.isModerator = true;
+            }
+            if(req.session.roles.includes("Moderatör")){
+                req.session.isAdmin = false;
+                req.session.isModerator = true;
+            }
             res.redirect("/profile");
         } else {
             res.render("auth/login", {

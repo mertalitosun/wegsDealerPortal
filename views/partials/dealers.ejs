@@ -13,9 +13,11 @@
                 <th>(%) Bayi Komisyon Oranı</th>
                 <th>(%) Alt Bayi Komisyon Oranı</th>
                 <th>(₺) Toplam Hakediş</th>
-                <th>Alt Bayi Ekle</th>
-                <th>Müşteri Ekle</th>
-                <th>Düzenle</th>
+                <% if (isAdmin) { %>    
+                    <th>Alt Bayi Ekle</th>
+                    <th>Müşteri Ekle</th>
+                    <th>Düzenle</th>
+                <% } %>
             </tr>
         </thead>
         <tbody>
@@ -41,15 +43,17 @@
                     <td>
                         <%= totalEarn == 0 ? "-" : totalEarn %>
                     </td>
-                    <td>
-                        <a href="/admin/<%= dealers.firstName %>/dealer/create/<%= dealers.id %>" class="btn dealerAdd"><i class="bi bi-shop"></i></a>
-                    </td>
-                    <td>
-                        <a href="/admin/customer/create/<%= dealers.id %>" class="btn customerAdd"><i class="bi bi-person-plus"></i></a>
-                    </td>
-                    <td>
-                        <a href="/admin/dealer/edit/<%= dealers.id %>" class="btn edit"><i class="bi bi-pencil-square"></i> </a>
-                    </td>
+                    <% if (isAdmin) { %>
+                        <td>
+                            <a href="/admin/<%= dealers.firstName %>/dealer/create/<%= dealers.id %>" class="btn dealerAdd"><i class="bi bi-shop"></i></a>
+                        </td>
+                        <td>
+                            <a href="/admin/customer/create/<%= dealers.id %>" class="btn customerAdd"><i class="bi bi-person-plus"></i></a>
+                        </td>
+                        <td>
+                            <a href="/admin/dealer/edit/<%= dealers.id %>" class="btn edit"><i class="bi bi-pencil-square"></i> </a>
+                        </td>
+                    <% } %>
                 </tr>
         </tbody>
     </table>

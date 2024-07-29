@@ -38,22 +38,48 @@
                 <label for="status" class="form-label">Bayi Aktiflik Durumu</label>
                 <div class="d-flex justify-content-around" style="max-width: 200px;">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" id="statusAktif" value="true" <%= dealers.status ? 'checked' : '' %>>
-                        <label class="form-check-label status active-status" for="statusAktif">
+                        <input class="form-check-input" type="radio" name="status" id="active-status" value="true" <%= dealers.status ? 'checked' : '' %>>
+                        <label class="form-check-label status active-status" for="active-status">
                             Aktif
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" id="statusPasif" value="false" <%= !dealers.status ? 'checked' : '' %>>
-                        <label class="form-check-label status inActive-status" for="statusPasif">
+                        <input class="form-check-input" type="radio" name="status" id="inActive-status" value="false" <%= !dealers.status ? 'checked' : '' %>>
+                        <label class="form-check-label status inActive-status" for="inActive-status">
                             Pasif
                         </label>
                     </div>
                 </div>
             </div>
+
+            <div class="mb-3" id="statusDescriptionArea">
+                <label for="statusDescription" class="form-label">Soyad</label>
+                <input type="text" id="statusDescription" name="statusDescription" placeholder="Bayilik pasif olma nedeni yazınız" class="form-control" value="<%= dealers.statusDescription %>">
+            </div>
+    
             <button type="submit" class="btn btn-primary">Kaydet</button>
             <a href="/admin/dealer/details/<%= dealers.id %>" class="btn btn-warning">Vazgeç</a>
         </form>
     </div>
+    <script>
+        const active = document.getElementById("active-status");
+        const inActive = document.getElementById("inActive-status");
+        const statusDescriptionArea = document.getElementById("statusDescriptionArea");
+
+        document.addEventListener("DOMContentLoaded",()=>{
+            if(active.checked){
+                statusDescriptionArea.style.display="none"
+            }else{
+                statusDescriptionArea.style.display="block"
+
+            }
+            inActive.addEventListener("click",()=>{
+                statusDescriptionArea.style.display="block"
+            })
+            active.addEventListener("click",()=>{
+                statusDescriptionArea.style.display="none"
+            })
+        })
+    </script>
 </body>
 </html>
