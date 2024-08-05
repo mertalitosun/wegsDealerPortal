@@ -2,8 +2,8 @@ const config = {
     db:{
         host:"localhost",
         user:"root",
-        password:"Mertali2001*?",
-        databse:"dealerPortal"
+        password:"<your_password>",
+        databse:"<your_database>"
     }
 }
 
